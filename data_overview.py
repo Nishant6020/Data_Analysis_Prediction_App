@@ -20,7 +20,8 @@ def data_overview(df):
     "Show Unique Values",
     "Show Value Counts",
     "Show Numerical or Categorical Columns",
-    "Separate Numerical & Categorical Columns",
+    "Correlation",
+    "skewness & kurtosis",
 ]
     overview_tabs = st.tabs(overview_option)
     # Handle Data Overview tasks
@@ -73,8 +74,14 @@ def data_overview(df):
     with overview_tabs[9]: #"Show Numerical or Categorical Columns":
         column_type = st.radio("Select column type:", ['Numerical', 'Categorical'])
         st.write(f"### {column_type} Columns Data")
+        st.write(column_selection(st.session_state.df))
         st.write(show_column_data(st.session_state.df, column_type))
 
-    with overview_tabs[10]: #"Separate Numerical & Categorical Columns":
-        st.write("### Column Types")
-        st.write(column_selection(st.session_state.df))
+  
+    with overview_tabs[10]: 
+        st.write("### Correlation")
+        st.write(corelation(st.session_state.df))
+
+    with overview_tabs[11]: 
+        st.write("### skewness & kurtosis")
+        st.write(skewness_kurtosis(st.session_state.df))
