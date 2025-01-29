@@ -1,14 +1,13 @@
 import streamlit as st
 import pygwalker as pyg
 
-# Function to display PyGWalker visualization
 def pygwalker_visualization(df):
     st.subheader("Interactive Visualization with PyGWalker")
     
-    # Check if the DataFrame is not empty
     if df is not None and not df.empty:
-        st.write("DataFrame shape:", df.shape)  # Debugging line
-        st.write("DataFrame sample:", df.head())  # Debugging line
+        st.write("DataFrame shape:", df.shape)
+        st.write("DataFrame types:", df.dtypes)
+        st.write("NaN values in DataFrame:", df.isnull().sum())
         
         try:
             pyg_html = pyg.walk(df, return_html=True)
