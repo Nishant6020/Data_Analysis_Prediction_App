@@ -143,6 +143,10 @@ def show_value_counts(df, column):
     st.write(f"### Value Counts for Column: {column}")
     st.write(df[column].value_counts())
 
+def corelation(df):
+    return df.select_dtypes(include=['number']).corr()
+
+
 
 
 # Data Visualization
