@@ -1,18 +1,68 @@
 import streamlit as st
-import pygwalker as pyg
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+from function import *
 
-def pygwalker_visualization(df):
-    st.subheader("Interactive Visualization with PyGWalker")
+def data_visualization(df):
+    # Visualize Data button
+    tabs = ["Pair Plot", "Bar Plot", "Scatter Plot", "Histogram", "Box Plot", "Count Plot",
+            "Violin Plot", "Line Chart", "Correlation Heatmap", "Distribution Plot", "Pie Chart"]
     
-    if df is not None and not df.empty:
-        st.write("DataFrame shape:", df.shape)
-        st.write("DataFrame types:", df.dtypes)
-        st.write("NaN values in DataFrame:", df.isnull().sum())
-        
-        try:
-            pyg_html = pyg.walk(df, return_html=True)
-            st.components.v1.html(pyg_html, height=800, scrolling=True)
-        except Exception as e:
-            st.error(f"An error occurred while generating the visualization: {e}")
-    else:
-        st.error("The DataFrame is empty or not valid for visualization.")
+    # Create tabs
+    tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8, tab9, tab10, tab11 = st.tabs(tabs)
+
+    # Tab content for Pair Plot
+    with tab1:
+        st.header("Pair Plot")
+        create_pairplot(df)
+
+    # Tab content for Bar Plot
+    with tab2:
+        st.header("Bar Plot")
+        create_bar_chart(df)
+
+    # Tab content for Scatter Plot
+    with tab3:
+        st.header("Scatter Plot")
+        create_scatter_plot(df)
+
+    # Tab content for Histogram
+    with tab4:
+        st.header("Histogram")
+        create_histogram(df)
+
+    # Tab content for Box Plot
+    with tab5:
+        st.header("Box Plot")
+        create_boxplot(df)
+
+    # Tab content for Count Plot
+    with tab6:
+        st.header("Count Plot")
+        create_count_plot(df)
+
+    # Tab content for Violin Plot
+    with tab7:
+        st.header("Violin Plot")
+        create_violin_plot(df)
+
+    # Tab content for Line Chart
+    with tab8:
+        st.header("Line Chart")
+        create_line_chart(df)
+
+    # Tab content for Heatmap (Correlation)
+    with tab9:
+        st.header("Correlation Heatmap")
+        create_heatmap(df)
+
+    # Tab content for Distribution Plot (optional)
+    with tab10:
+        st.header("Distribution Plot")
+        st.write("Distribution plot functionality can be implemented here!")
+
+    # Tab content for Pie Chart (optional)
+    with tab11:
+        st.header("Pie Chart")
+        st.write("Pie chart functionality can be implemented here!")
