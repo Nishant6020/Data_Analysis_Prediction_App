@@ -183,7 +183,7 @@ def data_cleaning(df):
             st.success("Selected columns encoded!")
             st.write(unique_columns(st.session_state.df))
 
-    with clean_tabs[8]: # "Download Clean Data":
+    with st.sidebar: # "Download Clean Data":
         file_name = st.text_input("Enter file name to save:", "cleaned_data.csv")
         if st.button("Download Data"):
             download_clean_data(st.session_state.df, file_name)
