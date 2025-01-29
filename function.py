@@ -160,7 +160,7 @@ def clean_and_download_file(df):
                 label="Download Cleaned Data",
                 data=df_cleaned.to_csv(index=False),
                 file_name=file_name,
-                mime="text/csv"
+                mime="text/csv")
 
 
 
