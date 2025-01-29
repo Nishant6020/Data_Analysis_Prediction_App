@@ -4,7 +4,8 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from function import *
 import pygwalker as pyg
-from pygwalker.api.streamlit import StreamlitRenderer
+# from pygwalker.api.streamlit import StreamlitRenderer
+import streamlit.components.v1 as components 
 
 
 # Function to display PyGWalker visualization
