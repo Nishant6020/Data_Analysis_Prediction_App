@@ -3,7 +3,7 @@ from streamlit_option_menu import option_menu
 from data_preview import data_preview
 from data_overview import data_overview
 from data_cleaning import data_cleaning
-from data_visualization import pygwalker_visualization
+from data_visualization import *
 from home import home
 from contact import contact
 from prediction import prediction
@@ -49,7 +49,7 @@ if uploaded_file:
 
         if select == "Visualization":
             with st.expander("Visualization", expanded=True):
-                pygwalker_visualization(df)
+                data_visualization(df)
 
         if select == "Prediction Model":
             with st.expander("Prediction Model", expanded=True):
