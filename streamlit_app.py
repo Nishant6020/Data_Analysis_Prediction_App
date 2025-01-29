@@ -10,6 +10,7 @@ from home import home
 from contact import contact
 from prediction import prediction
 from function import load_data
+import os
 
 st.set_page_config(layout="wide")
 
@@ -17,11 +18,14 @@ st.set_page_config(layout="wide")
 def eda(df):
     profile = ProfileReport(df, title="Profiling Report")
     if st.button("Generate Report"):
-        profile.to_file("report.html")
+        # Ensure the directory for the report exists
+        if not os.path.exists("pages"):
+            os.makedirs("pages")
+        profile.to_file("pages/report.html")
         st.success("Report generated! You can view or download it below.")
 
         # Display a download link for the report
-        with open("report.html", "rb") as file:
+        with open("pages/report.html", "rb") as file:
             btn = st.download_button(
                 label="Download Report",
                 data=file,
@@ -31,7 +35,7 @@ def eda(df):
 
         # Option to display the report in an iframe
         st.markdown("### View Report")
-        st.markdown('<iframe src="report.html" width="100%" height="600"></iframe>', unsafe_allow_html=True)
+        st.markdown('<iframe src="pages/report.html" width="100%" height="600"></iframe>', unsafe_allow_html=True)
 
 # Sidebar Menu
 with st.sidebar:
