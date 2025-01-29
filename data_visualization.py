@@ -14,55 +14,55 @@ def data_visualization(df):
 
     # Tab content for Pair Plot
     with tab1:
-        st.header("Pair Plot")
+        #st.header("Pair Plot")
         create_pairplot(df)
 
     # Tab content for Bar Plot
     with tab2:
-        st.header("Bar Plot")
+        #st.header("Bar Plot")
         create_bar_chart(df)
 
     # Tab content for Scatter Plot
     with tab3:
-        st.header("Scatter Plot")
+        #st.header("Scatter Plot")
         create_scatter_plot(df)
 
     # Tab content for Histogram
     with tab4:
-        st.header("Histogram")
+        #st.header("Histogram")
         create_histogram(df)
 
     # Tab content for Box Plot
     with tab5:
-        st.header("Box Plot")
+        #st.header("Box Plot")
         create_boxplot(df)
 
     # Tab content for Count Plot
     with tab6:
-        st.header("Count Plot")
+        #st.header("Count Plot")
         create_count_plot(df)
 
     # Tab content for Violin Plot
     with tab7:
-        st.header("Violin Plot")
+        #st.header("Violin Plot")
         create_violin_plot(df)
 
     # Tab content for Line Chart
     with tab8:
-        st.header("Line Chart")
+        #st.header("Line Chart")
         create_line_chart(df)
 
     # Tab content for Heatmap (Correlation)
     with tab9:
-        st.header("Correlation Heatmap")
+        #st.header("Correlation Heatmap")
         create_heatmap(df)
 
     # Tab content for Distribution Plot (optional)
     with tab10:
-        st.header("Distribution Plot")
+        #st.header("Distribution Plot")
         st.write("Distribution plot functionality can be implemented here!")
 
     # Tab content for Pie Chart (optional)
     with tab11:
-        st.header("Pie Chart")
+        #st.header("Pie Chart")
         st.write("Pie chart functionality can be implemented here!")
