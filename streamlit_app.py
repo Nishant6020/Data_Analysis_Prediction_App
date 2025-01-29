@@ -1,4 +1,5 @@
 from ydata_profiling import ProfileReport
+import streamlit.components.v1 as components
 import pandas as pd
 import streamlit as st
 from streamlit_option_menu import option_menu
@@ -10,32 +11,10 @@ from home import home
 from contact import contact
 from prediction import prediction
 from function import load_data
+from eda import eda
 import os
 
 st.set_page_config(layout="wide")
-
-# Data profiling
-def eda(df):
-    profile = ProfileReport(df, title="Profiling Report")
-    if st.button("Generate Report"):
-        # Ensure the directory for the report exists
-        if not os.path.exists("pages"):
-            os.makedirs("pages")
-        profile.to_file("pages/report.html")
-        st.success("Report generated! You can view or download it below.")
-
-        # Display a download link for the report
-        with open("pages/report.html", "rb") as file:
-            btn = st.download_button(
-                label="Download Report",
-                data=file,
-                file_name="Profiling_Report.html",
-                mime="text/html"
-            )
-
-        # Option to display the report in an iframe
-        st.markdown("### View Report")
-        st.markdown('<iframe src="pages/report.html" width="100%" height="600"></iframe>', unsafe_allow_html=True)
 
 # Sidebar Menu
 with st.sidebar:
