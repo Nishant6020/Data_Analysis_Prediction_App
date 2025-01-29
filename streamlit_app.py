@@ -1,5 +1,4 @@
 import streamlit as st
-import streamlit.components.v1 as components 
 from streamlit_option_menu import option_menu
 from data_preview import data_preview
 from data_overview import data_overview
@@ -9,7 +8,6 @@ from home import home
 from contact import contact
 from prediction import prediction
 from function import load_data
-import pygwalker as pyg
 
 st.set_page_config(layout="wide")
 
@@ -48,10 +46,6 @@ if uploaded_file:
         if select == "Data Cleaning":
             with st.expander("Data Cleaning", expanded=True):
                 data_cleaning(df)
-        
-        # if select == "Statistical Analysis":
-        #     with st.expander("Statistical Analysis", expanded=True):
-        #         statistical_analysis(df)
 
         if select == "Visualization":
             with st.expander("Visualization", expanded=True):
