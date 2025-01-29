@@ -28,7 +28,7 @@ with st.sidebar:
         orientation="vertical",
     )
     uploaded_file = st.file_uploader("Upload your file (CSV, Excel, or JSON)", type=["csv", "xlsx", "json"])
-    clean_and_download_file(df)
+    st.write(clean_and_download_file(df))
 
 st.title("Data Analysis & Prediction Building Application")
 
