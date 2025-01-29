@@ -12,7 +12,6 @@ from prediction import prediction
 from function import load_data
 
 st.set_page_config(layout="wide")
-
 # Sidebar Menu
 with st.sidebar:
     select = option_menu(
