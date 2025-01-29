@@ -19,7 +19,6 @@ def data_cleaning(df):
     "Replace Values",
     "Clean Categorical Text",
     "Encode Categorical Columns",
-    "Download Clean Data",
 ]
     clean_tabs= st.tabs(cleaning_option)
 
