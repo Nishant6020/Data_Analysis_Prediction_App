@@ -252,24 +252,3 @@ def create_heatmap(df):
     fig, ax = plt.subplots(figsize=(10, 8))
     sns.heatmap(df.corr(), annot=True, fmt=".2f", cmap='coolwarm', ax=ax)
     st.pyplot(fig)
-
-# Data profiling 
-# Data profiling 
-def eda(df):
-    profile = ProfileReport(df, title="Profiling Report")
-    if st.button("Generate Report"):
-        profile.to_file("report.html")
-        st.success("Report generated! You can view or download it below.")
-
-        # Display a download link for the report
-        with open("report.html", "rb") as file:
-            btn = st.download_button(
-                label="Download Report",
-                data=file,
-                file_name="Profiling_Report.html",
-                mime="text/html"
-            )
-
-        # Option to display the report in an iframe
-        st.markdown("### View Report")
-        st.markdown('<iframe src="report.html" width="100%" height="600"></iframe>', unsafe_allow_html=True)
