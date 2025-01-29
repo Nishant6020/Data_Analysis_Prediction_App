@@ -4,7 +4,7 @@ from streamlit_option_menu import option_menu
 from data_preview import data_preview
 from data_overview import data_overview
 from data_cleaning import data_cleaning
-from data_visualization import *
+from data_visualization import pygwalker_visualization
 from home import home
 from contact import contact
 from prediction import prediction
