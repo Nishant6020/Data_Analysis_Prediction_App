@@ -149,6 +149,21 @@ def corelation(df):
 def skewness_kurtosis(df):
     return df.select_dtypes(include=['number']).agg(['skew','kurtosis']).T
 
+def clean_and_download_file(df):
+    with st.sidebar:
+        st.markdown("## Download Clean Data")
+        file_name = st.text_input("Enter file name to save:", "cleaned_data.csv")
+        if st.button("Download Data"):
+            df_cleaned.to_csv(file_name, index=False)
+            st.success(f"File saved as {file_name}!")
+            st.download_button(
+                label="Download Cleaned Data",
+                data=df_cleaned.to_csv(index=False),
+                file_name=file_name,
+                mime="text/csv"
+
+
+
 
 # Data Visualization
 
