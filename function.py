@@ -6,6 +6,8 @@ from skimpy import skim
 import matplotlib.pyplot as plt
 import seaborn as sns
 from function import *
+from ydata_profiling import ProfileReport
+
 
 # Function definitions (reuse from previous implementation)
 
@@ -250,3 +252,8 @@ def create_heatmap(df):
     fig, ax = plt.subplots(figsize=(10, 8))
     sns.heatmap(df.corr(), annot=True, fmt=".2f", cmap='coolwarm', ax=ax)
     st.pyplot(fig)
+
+# Data profiling 
+def eda(df):
+    profile = ProfileReport(df, title="Profiling Report")
+    profile.to_file("report.html")
