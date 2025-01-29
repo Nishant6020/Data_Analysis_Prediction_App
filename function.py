@@ -146,7 +146,8 @@ def show_value_counts(df, column):
 def corelation(df):
     return df.select_dtypes(include=['number']).corr()
 
-
+def skewness_kurtosis(df):
+    return df.select_dtypes(include=['number']).agg(['skew','kurtosis']).T
 
 
 # Data Visualization
