@@ -1,6 +1,5 @@
 import streamlit as st
 import streamlit.components.v1 as components 
-from pygwalker.api.streamlit import StreamlitRenderer
 from streamlit_option_menu import option_menu
 from data_preview import data_preview
 from data_overview import data_overview
