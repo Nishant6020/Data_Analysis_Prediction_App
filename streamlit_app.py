@@ -15,9 +15,9 @@ st.set_page_config(layout="wide")
 with st.sidebar:
     select = option_menu(
         menu_title="Menu",
-        options=["Home", "Data Preview", "Data Overview", "Data Cleaning", "Visualization", 
+        options=["Home", "Data Preview", "Data Overview", "Data Cleaning","EDA Report", "Visualization", 
                  "Prediction Model", "Contact"],
-        icons=["house", "search", "images", "arrow-repeat", "graph-up-arrow", "boxes", "person-lines-fill"],
+        icons=["house", "search", "images", "arrow-repeat","" ,"graph-up-arrow", "boxes", "person-lines-fill"],
         menu_icon="menu-button-wide-fill",
         default_index=0,
         orientation="vertical",
@@ -46,7 +46,10 @@ if uploaded_file:
         if select == "Data Cleaning":
             with st.expander("Data Cleaning", expanded=True):
                 data_cleaning(df)
-
+        if select == "EDA Report":
+            with st.expander("EDA Report", expanded=True):
+                eda(df)
+        
         if select == "Visualization":
             with st.expander("Visualization", expanded=True):
                 data_visualization(df)
@@ -81,6 +84,10 @@ else:
             with st.expander("Data Cleaning", expanded=True):
                 data_cleaning(df)
 
+        if select == "EDA Report":
+            with st.expander("EDA Report", expanded=True):
+                eda(df)
+            
         if select == "Visualization":
             with st.expander("Visualization", expanded=True):
                 pygwalker_visualization(df)
