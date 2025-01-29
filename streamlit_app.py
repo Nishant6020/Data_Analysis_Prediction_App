@@ -1,9 +1,11 @@
+from ydata_profiling import ProfileReport
+import pandas as pd
 import streamlit as st
 from streamlit_option_menu import option_menu
 from data_preview import data_preview
 from data_overview import data_overview
 from data_cleaning import data_cleaning
-from data_visualization import *
+from data_visualization import data_visualization
 from home import home
 from contact import contact
 from prediction import prediction
@@ -11,13 +13,13 @@ from function import load_data
 
 st.set_page_config(layout="wide")
 
-# Sidebar
+# Sidebar Menu
 with st.sidebar:
     select = option_menu(
         menu_title="Menu",
-        options=["Home", "Data Preview", "Data Overview", "Data Cleaning","EDA Report", "Visualization", 
+        options=["Home", "Data Preview", "Data Overview", "Data Cleaning", "EDA Report", "Visualization", 
                  "Prediction Model", "Contact"],
-        icons=["house", "search", "images", "arrow-repeat","" ,"graph-up-arrow", "boxes", "person-lines-fill"],
+        icons=["house", "search", "images", "arrow-repeat", "", "graph-up-arrow", "boxes", "person-lines-fill"],
         menu_icon="menu-button-wide-fill",
         default_index=0,
         orientation="vertical",
@@ -35,31 +37,32 @@ if uploaded_file:
             with st.expander("Home", expanded=True):
                 home()
 
-        if select == "Data Preview":
+        elif select == "Data Preview":
             with st.expander("Data Preview", expanded=True):
                 data_preview(df)
 
-        if select == "Data Overview":
+        elif select == "Data Overview":
             with st.expander("Data Overview", expanded=True):
                 data_overview(df)
 
-        if select == "Data Cleaning":
+        elif select == "Data Cleaning":
             with st.expander("Data Cleaning", expanded=True):
                 data_cleaning(df)
-        if select == "EDA Report":
+
+        elif select == "EDA Report":
             with st.expander("EDA Report", expanded=True):
                 eda(df)
         
-        if select == "Visualization":
+        elif select == "Visualization":
             with st.expander("Visualization", expanded=True):
                 data_visualization(df)
 
-        if select == "Prediction Model":
+        elif select == "Prediction Model":
             with st.expander("Prediction Model", expanded=True):
                 st.write("### Prediction Model")
                 st.write("This feature is under development.")
 
-        if select == "Contact":
+        elif select == "Contact":
             with st.expander("Contact", expanded=True):
                 contact()
     else:
@@ -72,31 +75,31 @@ else:
             with st.expander("Home", expanded=True):
                 home()
 
-        if select == "Data Preview":
+        elif select == "Data Preview":
             with st.expander("Data Preview", expanded=True):
                 data_preview(df)
 
-        if select == "Data Overview":
+        elif select == "Data Overview":
             with st.expander("Data Overview", expanded=True):
                 data_overview(df)
 
-        if select == "Data Cleaning":
+        elif select == "Data Cleaning":
             with st.expander("Data Cleaning", expanded=True):
                 data_cleaning(df)
 
-        if select == "EDA Report":
+        elif select == "EDA Report":
             with st.expander("EDA Report", expanded=True):
                 eda(df)
             
-        if select == "Visualization":
+        elif select == "Visualization":
             with st.expander("Visualization", expanded=True):
-                pygwalker_visualization(df)
+                data_visualization(df)
 
-        if select == "Prediction Model":
+        elif select == "Prediction Model":
             with st.expander("Prediction Model", expanded=True):
                 prediction()
 
-        if select == "Contact":
+        elif select == "Contact":
             with st.expander("Contact", expanded=True):
                 contact()
     else:
@@ -105,11 +108,11 @@ else:
                 st.write("Welcome to the **Data Analysis & Prediction Building Application**! Use the expanders to navigate.")
                 home()
 
-        if select == "Contact":
+        elif select == "Contact":
             with st.expander("Contact", expanded=True):
                 contact()
 
-        if select == "Prediction Model":
+        elif select == "Prediction Model":
             with st.expander("Prediction Model", expanded=True):
                 prediction()
 
