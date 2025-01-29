@@ -7,4 +7,5 @@ seaborn
 pygwalker
 skimpy
 scikit-learn
+ydata-profiling
 
