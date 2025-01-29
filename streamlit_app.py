@@ -10,7 +10,7 @@ from data_visualization import data_visualization
 from home import home
 from contact import contact
 from prediction import prediction
-from function import load_data, clean_and_download_file
+from function import *
 from eda import eda
 import os
 
