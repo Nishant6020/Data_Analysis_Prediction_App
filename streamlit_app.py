@@ -1,4 +1,5 @@
-from ydata_profiling import ProfileReportimport pandas as pd
+from ydata_profiling import ProfileReport
+import pandas as pd
 import streamlit as st
 from streamlit_option_menu import option_menu
 from data_preview import data_preview
@@ -12,13 +13,33 @@ from function import load_data
 
 st.set_page_config(layout="wide")
 
+# Data profiling
+def eda(df):
+    profile = ProfileReport(df, title="Profiling Report")
+    if st.button("Generate Report"):
+        profile.to_file("report.html")
+        st.success("Report generated! You can view or download it below.")
+
+        # Display a download link for the report
+        with open("report.html", "rb") as file:
+            btn = st.download_button(
+                label="Download Report",
+                data=file,
+                file_name="Profiling_Report.html",
+                mime="text/html"
+            )
+
+        # Option to display the report in an iframe
+        st.markdown("### View Report")
+        st.markdown('<iframe src="report.html" width="100%" height="600"></iframe>', unsafe_allow_html=True)
+
 # Sidebar Menu
 with st.sidebar:
     select = option_menu(
         menu_title="Menu",
-        options=["Home", "Data Preview", "Data Overview","EDA" ,"Data Cleaning", "Visualization", 
+        options=["Home", "Data Preview", "Data Overview", "Data Cleaning", "EDA Report", "Visualization", 
                  "Prediction Model", "Contact"],
-        icons=["house", "search", "images", "arrow-repeat", "EDA ,"graph-up-arrow", "boxes", "person-lines-fill"],
+        icons=["house", "search", "images", "arrow-repeat", "", "graph-up-arrow", "boxes", "person-lines-fill"],
         menu_icon="menu-button-wide-fill",
         default_index=0,
         orientation="vertical",
@@ -48,11 +69,10 @@ if uploaded_file:
             with st.expander("Data Cleaning", expanded=True):
                 data_cleaning(df)
 
-        elif select == "EDA":
-            with st.expander("EDA", expanded=True):
-                profile = ProfileReport(df, title="Profiling Report")
-                st.write(eda(df))
-
+        elif select == "EDA Report":
+            with st.expander("EDA Report", expanded=True):
+                eda(df)
+        
         elif select == "Visualization":
             with st.expander("Visualization", expanded=True):
                 data_visualization(df)
@@ -87,10 +107,9 @@ else:
             with st.expander("Data Cleaning", expanded=True):
                 data_cleaning(df)
 
-        elif select == "EDA":
-            with st.expander("EDA", expanded=True):
-                profile = ProfileReport(df, title="Profiling Report")
-                st.write(eda(df))
+        elif select == "EDA Report":
+            with st.expander("EDA Report", expanded=True):
+                eda(df)
             
         elif select == "Visualization":
             with st.expander("Visualization", expanded=True):
@@ -118,23 +137,3 @@ else:
                 prediction()
 
         st.warning("Please upload a file to proceed.")
-
-# Data profiling
-def eda(df):
-    profile = ProfileReport(df, title="Profiling Report")
-    if st.button("Generate Report"):
-        profile.to_file("report.html")
-        st.success("Report generated! You can view or download it below.")
-
-        # Display a download link for the report
-        with open("report.html", "rb") as file:
-            btn = st.download_button(
-                label="Download Report",
-                data=file,
-                file_name="Profiling_Report.html",
-                mime="text/html"
-            )
-
-        # Option to display the report in an iframe
-        st.markdown("### View Report")
-        st.markdown('<iframe src="report.html" width="100%" height="600"></iframe>', unsafe_allow_html=True)
