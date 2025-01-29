@@ -10,7 +10,7 @@ from data_visualization import data_visualization
 from home import home
 from contact import contact
 from prediction import prediction
-from function import load_data
+from function import load_data, clean_and_download_file
 from eda import eda
 import os
 
@@ -29,6 +29,14 @@ def display_section(df, select):
     elif select == "Data Cleaning":
         with st.expander("Data Cleaning", expanded=True):
             data_cleaning(df)
+            # Add download button for cleaned data
+            cleaned_file = clean_and_download_file(df)
+            st.download_button(
+                label="Download Cleaned Data",
+                data=cleaned_file,
+                file_name='cleaned_data.csv',
+                mime='text/csv'
+            )
     elif select == "EDA Report":
         with st.expander("EDA Report", expanded=True):
             eda(df)
