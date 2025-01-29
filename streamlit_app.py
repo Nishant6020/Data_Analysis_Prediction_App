@@ -12,13 +12,14 @@ from prediction import prediction
 from function import load_data
 
 st.set_page_config(layout="wide")
+
 # Sidebar Menu
 with st.sidebar:
     select = option_menu(
         menu_title="Menu",
         options=["Home", "Data Preview", "Data Overview", "Data Cleaning", "EDA Report", "Visualization", 
                  "Prediction Model", "Contact"],
-        icons=["house", "search", "images", "arrow-repeat", "", "graph-up-arrow", "boxes", "person-lines-fill"],
+        icons=["house", "search", "images", "arrow-repeat", "file-earmark-text", "graph-up-arrow", "boxes", "person-lines-fill"],
         menu_icon="menu-button-wide-fill",
         default_index=0,
         orientation="vertical",
@@ -50,7 +51,7 @@ if uploaded_file:
 
         elif select == "EDA Report":
             with st.expander("EDA Report", expanded=True):
-                eda(df)
+                eda_report(df)
         
         elif select == "Visualization":
             with st.expander("Visualization", expanded=True):
@@ -88,7 +89,7 @@ else:
 
         elif select == "EDA Report":
             with st.expander("EDA Report", expanded=True):
-                eda(df)
+                eda_report(df)
             
         elif select == "Visualization":
             with st.expander("Visualization", expanded=True):
@@ -116,3 +117,13 @@ else:
                 prediction()
 
         st.warning("Please upload a file to proceed.")
+
+# Function to generate EDA report
+def eda_report(df):
+    st.subheader("Exploratory Data Analysis Report")
+    
+    # Generate the EDA report
+    profile = ProfileReport(df, title="Pandas Profiling Report", explorative=True)
+    
+    # Display the report in Streamlit
+    st_profile_report(profile)
