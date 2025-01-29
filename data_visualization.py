@@ -4,9 +4,15 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from function import *
 import pygwalker as pyg
+from pygwalker.api.streamlit import StreamlitRenderer
+
 
 # Function to display PyGWalker visualization
 def pygwalker_visualization(df):
+    # Adjust the width of the Streamlit page
+    st.set_page_config(
+        page_title="Use Pygwalker In Streamlit",
+        layout="wide")
     st.subheader("Interactive Visualization with PyGWalker")
     pyg_html = pyg.walk(st.session_state.df, return_html=True)
     st.components.v1.html(pyg_html, height=800, scrolling=True)
