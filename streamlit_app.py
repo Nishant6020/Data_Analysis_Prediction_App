@@ -1,4 +1,5 @@
 import streamlit as st
+import streamlit.components.v1 as components 
 from pygwalker.api.streamlit import StreamlitRenderer
 from streamlit_option_menu import option_menu
 from data_preview import data_preview
@@ -11,10 +12,7 @@ from prediction import prediction
 from function import load_data
 import pygwalker as pyg
 
-st.set_page_config(
-    page_title="Use Pygwalker In Streamlit",
-    layout="wide"
-)
+st.set_page_config(layout="wide")
 
 # Sidebar
 with st.sidebar:
