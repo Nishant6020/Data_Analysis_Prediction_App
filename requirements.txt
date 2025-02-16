@@ -8,4 +8,9 @@ pygwalker
 skimpy
 scikit-learn
 ydata-profiling
-
+plotly
+joblib
+os
+re
+xgboost
+pickle  
