@@ -1519,7 +1519,10 @@ import plotly.express as px
 import plotly.graph_objects as go
 import scipy.stats
 # Streamlit App
+import pygwalker as pyg 
 st.title("Data Analysis & Model Building App")
+# Page Configuration
+st.set_page_config(page_title="StWalker App",layout="wide")
 
 st.sidebar.title("Menu")
 st.sidebar.markdown("________________________")
@@ -1564,6 +1567,7 @@ if 'df' in st.session_state:
                 "50 Rows",
                 "Sample Data",
                "EDA Report",
+               "Pyg",
             ])         
             # Handle Data prerview tasks
             if prerview_option == "Data Preview":
@@ -1582,6 +1586,13 @@ if 'df' in st.session_state:
                 sample_data(st.session_state.df)
             elif prerview_option == "EDA Report":
                eda(st.session_state.df)
+            elif prerview_option == "Pyg":
+               # Visualize
+               pyg_html = pyg.walk(st.session_state.df,return_html=True)
+               # Render with components
+               stc.html(pyg_html,scrolling=True,height=1000)
+
+
         
 
         # Data Overview Section (Initially hidden)
