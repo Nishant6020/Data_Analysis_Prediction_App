@@ -1521,8 +1521,6 @@ import scipy.stats
 # Streamlit App
 import pygwalker as pyg 
 st.title("Data Analysis & Model Building App")
-# Page Configuration
-st.set_page_config(page_title="StWalker App",layout="wide")
 
 st.sidebar.title("Menu")
 st.sidebar.markdown("________________________")
