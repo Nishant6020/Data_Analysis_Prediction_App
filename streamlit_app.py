@@ -706,11 +706,10 @@ def classification_models(X_train, X_test, y_train, y_test, col_trans):
 # Data profiling
 def eda(df):
     profile = ProfileReport(df, title="Profiling Report")
-    if st.button("Generate Report"):
-        # Generate and cache the report
-        profile.to_file("report.html")
-        st.session_state['report_generated'] = True
-        st.success("Report generated! You can view or download it below.")
+    # Generate and cache the report
+    profile.to_file("report.html")
+    st.session_state['report_generated'] = True
+    st.success("Report generated! You can view or download it below.")
 
     if st.session_state.get('report_generated'):
         # Display a download link for the report
