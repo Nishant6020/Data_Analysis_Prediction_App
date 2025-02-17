@@ -1521,7 +1521,7 @@ import scipy.stats
 # Streamlit App
 import pygwalker as pyg 
 st.title("Data Analysis & Model Building App")
-
+set_page_config()
 st.sidebar.title("Menu")
 st.sidebar.markdown("________________________")
 if st.sidebar.button("clear old cache"):
@@ -1585,7 +1585,6 @@ if 'df' in st.session_state:
             elif prerview_option == "EDA Report":
                eda(st.session_state.df)
             elif prerview_option == "Pyg":
-               st.set_page_config(page_title="StWalker App",layout="wide")
                # Visualize
                pyg_html = pyg.walk(st.session_state.df,return_html=True)
                # Render with components
