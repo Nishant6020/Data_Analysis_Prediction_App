@@ -9,7 +9,7 @@ def about():
 
         ### Features:
         1. **Data Preview**: View and explore the uploaded dataset with options to display different parts of the data.
-        2. **Data Overview**: Get an overview of the dataset, including statistics, missing values, duplicates, and column types.
+        2. **Data Overview**: Get an overviewimp of the dataset, including statistics, missing values, duplicates, and column types.
         3. **Data Cleaning**: Clean the data by handling missing values, duplicates, and encoding categorical variables.
         4. **Data Visualization**: Visualize the data with various charting options, such as pair plots, bar plots, scatter plots, etc.
         5. **Prediction Model**: Build predictive models and analyze results.
@@ -1497,6 +1497,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import pickle
 from ydata_profiling import ProfileReport
+import streamlit.components.v1 as components
 from sklearn.model_selection import train_test_split, GridSearchCV
 # from xgboost import XGBRegressor
 from sklearn.preprocessing import OneHotEncoder, StandardScaler, LabelEncoder
