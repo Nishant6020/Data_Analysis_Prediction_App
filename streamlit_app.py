@@ -2065,16 +2065,6 @@ if 'df' in st.session_state:
 
 st.sidebar.markdown("________________________")
 
-               if st.session_state.df is not None:
-                  # Generate Pygwalker HTML
-                    pyg_html = pyg.walk(st.session_state.df, return_html=True)
-                    # Render with Streamlit components
-                    components.html(pyg_html, scrolling=True, height=1000)
-               else:
-                  st.warning("No data available for visualization.")        
-
-
-
 # about page
 if st.sidebar.button("About"):
     about()
