@@ -4,11 +4,8 @@ numpy
 panda
 matplotlib
 seaborn
-pygwalker
-skimpy
 scikit-learn
 ydata-profiling
 plotly
 joblib
-xgboost
 pickle  
