@@ -1496,6 +1496,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 import pickle
+import pygwalker as pyg 
 from ydata_profiling import ProfileReport
 import streamlit.components.v1 as components
 from sklearn.model_selection import train_test_split, GridSearchCV
