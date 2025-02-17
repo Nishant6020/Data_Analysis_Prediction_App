@@ -1518,11 +1518,10 @@ import joblib
 import plotly.express as px
 import plotly.graph_objects as go
 import scipy.stats
-# Streamlit App
 import pygwalker as pyg 
 
 # Streamlit App
-st.set_page_config(page_title="Data Analysis & Model Building App", layout="wide")
+st.set_page_config(page_title="Data Analysis & Model Building App")
 st.title("Data Analysis & Model Building App")
 st.sidebar.title("Menu")
 st.sidebar.markdown("________________________")
