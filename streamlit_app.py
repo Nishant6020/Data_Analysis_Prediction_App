@@ -1496,6 +1496,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 import pickle
+from ydata_profiling import ProfileReport
 from sklearn.model_selection import train_test_split, GridSearchCV
 # from xgboost import XGBRegressor
 from sklearn.preprocessing import OneHotEncoder, StandardScaler, LabelEncoder
