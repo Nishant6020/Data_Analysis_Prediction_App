@@ -9,7 +9,7 @@ def about():
 
         ### Features:
         1. **Data Preview**: View and explore the uploaded dataset with options to display different parts of the data.
-        2. **Data Overview**: Get an overviewimp of the dataset, including statistics, missing values, duplicates, and column types.
+        2. **Data Overview**: Get an overview of the dataset, including statistics, missing values, duplicates, and column types.
         3. **Data Cleaning**: Clean the data by handling missing values, duplicates, and encoding categorical variables.
         4. **Data Visualization**: Visualize the data with various charting options, such as pair plots, bar plots, scatter plots, etc.
         5. **Prediction Model**: Build predictive models and analyze results.
@@ -1498,7 +1498,6 @@ import seaborn as sns
 import pickle
 import pygwalker as pyg 
 from ydata_profiling import ProfileReport
-import streamlit.components.v1 as components
 from sklearn.model_selection import train_test_split, GridSearchCV
 # from xgboost import XGBRegressor
 from sklearn.preprocessing import OneHotEncoder, StandardScaler, LabelEncoder
@@ -1518,8 +1517,8 @@ import joblib
 import plotly.express as px
 import plotly.graph_objects as go
 import scipy.stats
+import streamlit.components.v1 as components 
 import pygwalker as pyg 
-from pygwalker.api.streamlit import StreamlitRenderer
 
 # Streamlit App
 st.set_page_config(page_title="Data Analysis & Model Building App",layout="wide")
@@ -1587,11 +1586,13 @@ if 'df' in st.session_state:
             elif prerview_option == "EDA Report":
                eda(st.session_state.df)
             elif prerview_option == "Pyg":
-               # Visualize
-               renderer = StreamlitRenderer(df=st.session_state.df)
-               components.html(renderer.to_html(), scrolling=True, height=1000)
-
-        
+               if st.session_state.df is not None:
+                  # Generate Pygwalker HTML
+                    pyg_html = pyg.walk(st.session_state.df, return_html=True)
+                    # Render with Streamlit components
+                    components.html(pyg_html, scrolling=True, height=1000)
+                else:
+                    st.warning("No data available for visualization.")        
 
         # Data Overview Section (Initially hidden)
         data_overview_expander = st.sidebar.expander("Data Overview", expanded=False)
