@@ -1380,7 +1380,7 @@ def regression_model(X_train, X_test, y_train, y_test, col_trans):
                 file_name = f"{model_name}.pkl"
                 try:
                     with open(file_name, "wb") as f:
-                        pickle.dump(model, f)
+                        joblib.dump(model, f)
                     st.success(f"Model saved successfully as `{file_name}`")
                 except Exception as e:
                     st.error(f"Error saving model: {e}")
@@ -1480,7 +1480,7 @@ def classification_models(X_train, X_test, y_train, y_test, col_trans):
                 file_name = f"{model_name}.pkl"
                 try:
                     with open(file_name, "wb") as f:
-                        pickle.dump(model, f)
+                        joblib.dump(model, f)
                     st.success(f"Model saved successfully as `{file_name}`")
                 except Exception as e:
                     st.error(f"Error saving model: {e}")
