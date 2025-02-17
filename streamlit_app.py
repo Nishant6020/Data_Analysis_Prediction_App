@@ -705,30 +705,27 @@ def classification_models(X_train, X_test, y_train, y_test, col_trans):
 
 # Data profiling
 def eda(df):
-    if df is not None:
-        profile = ProfileReport(df, title="Profiling Report")
+    profile = ProfileReport(df, title="Profiling Report")
+    if st.sidebar.button("Generate Report"):
+        # Generate and cache the report
+        profile.to_file("report.html")
+        st.session_state['report_generated'] = True
+        st.success("Report generated! You can view or download it below.")
 
-        if 'report_generated' not in st.session_state:
-            st.session_state['report_generated'] = False
+    if st.session_state.get('report_generated'):
+        # Display a download link for the report
+        with open("report.html", "rb") as file:
+            st.sidebar.download_button(
+                label="Download Report",
+                data=file,
+                file_name="Profiling_Report.html",
+                mime="text/html"
+            )
 
-        if st.sidebar.button("Generate Report"):
-            profile.to_file("report.html")
-            st.session_state['report_generated'] = True
-            st.success("Report generated! You can view or download it below.")
-
-        if st.session_state['report_generated']:
-            with open("report.html", "rb") as file:
-                st.sidebar.download_button(
-                    label="Download Report",
-                    data=file,
-                    file_name="Profiling_Report.html",
-                    mime="text/html"
-                )
-
-            if st.sidebar.button("View Report"):
-                with open("report.html", "r", encoding="utf-8") as f:
-                    report_html = f.read()
-                    components.html(report_html, height=800, scrolling=True)
+        if st.sidebar.button("View Report"):
+            with open("report.html", "r", encoding="utf-8") as f:
+                report_html = f.read()
+                components.html(report_html, height=800, scrolling=True)
 
 
 
@@ -788,10 +785,6 @@ if external_link and st.sidebar.button("Fetch Data"):
 
 if 'df' in st.session_state:
         st.sidebar.markdown("________________________")
-   #eda
-        data_eda = st.sidebar.toggle("Visualization")
-        if data_eda:
-           eda(st.session_state.df)
    
 # visualization
         Visual = st.sidebar.toggle("Visualization")
@@ -817,7 +810,7 @@ if 'df' in st.session_state:
                 "20 Rows",
                 "50 Rows",
                 "Sample Data",
-               # "EDA Report",
+               "EDA Report",
                
             ])         
             # Handle Data prerview tasks
@@ -835,8 +828,8 @@ if 'df' in st.session_state:
                 st.write(st.session_state.df.head(50))
             elif prerview_option == "Sample Data":
                 sample_data(st.session_state.df)
-            # elif prerview_option == "EDA Report":
-            #    eda(st.session_state.df)
+            elif prerview_option == "EDA Report":
+               eda(st.session_state.df)
 
         # Data Overview Section (Initially hidden)
         data_overview_expander = st.sidebar.expander("Data Overview", expanded=False)
