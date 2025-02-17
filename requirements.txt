@@ -11,3 +11,4 @@ joblib
 xgboost
 scipy
 setuptools==75.8.0
+pygwalker 
