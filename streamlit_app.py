@@ -1520,7 +1520,7 @@ import plotly.graph_objects as go
 import scipy.stats
 # Streamlit App
 import pygwalker as pyg 
-set_page_config(page_title="Data Analysis & Model Building App)
+set_page_config(page_title="Data Analysis & Model Building App,layout="wide")
 st.title("Data Analysis & Model Building App")
 st.sidebar.title("Menu")
 st.sidebar.markdown("________________________")
