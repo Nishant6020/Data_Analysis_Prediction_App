@@ -788,11 +788,10 @@ if external_link and st.sidebar.button("Fetch Data"):
 
 if 'df' in st.session_state:
         st.sidebar.markdown("________________________")
-
-# eda
-       data_eda = st.sidebar.toggle("Visualization")
-       if data_eda:
-          eda(st.session_state.df)
+   #eda
+        data_eda = st.sidebar.toggle("Visualization")
+        if data_eda:
+           eda(st.session_state.df)
    
 # visualization
         Visual = st.sidebar.toggle("Visualization")
