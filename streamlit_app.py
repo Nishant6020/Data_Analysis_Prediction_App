@@ -1489,6 +1489,7 @@ import os
 import joblib
 import plotly.express as px
 import plotly.graph_objects as go
+import scipy.stats
 # Streamlit App
 st.title("Data Analysis & Model Building App")
 
