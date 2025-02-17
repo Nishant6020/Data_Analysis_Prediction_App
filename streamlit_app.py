@@ -784,15 +784,20 @@ if external_link and st.sidebar.button("Fetch Data"):
         st.session_state.df = df
 
 if 'df' in st.session_state:
-# clean data download
-        down = st.sidebar.toggle("Download Clean Data")
-        if down:
-            file_name = st.sidebar.text_input("Enter file name to save:", "cleaned_data.csv")
-            if st.sidebar.button("Download Data"):
-                download_clean_data(st.session_state.df, file_name)
-                st.success(f"File saved as {file_name}!")
         st.sidebar.markdown("________________________")
 
+# visualization
+        Visual = st.sidebar.toggle("Visualization")
+        if Visual:
+           if st.session_state.df is not None:
+              # Generate Pygwalker HTML
+              pyg_html = pyg.walk(st.session_state.df, return_html=True)
+              # Render with Streamlit components
+              components.html(pyg_html, scrolling=True, height=1000)
+           else:
+              st.warning("No data available for visualization.")        
+   
+   
         # Data prerview Section (Initially hidden)
         data_prerview_expander = st.sidebar.expander("Data Preview", expanded=False)
         if data_prerview_expander:
@@ -1086,18 +1091,6 @@ if 'df' in st.session_state:
                     
                     # Refresh the page to reflect the changes
                     st.rerun()
-# visualization
-        powerbi = st.sidebar.toggle("Visualization")
-        if powerbi:
-           if st.session_state.df is not None:
-              # Generate Pygwalker HTML
-              pyg_html = pyg.walk(st.session_state.df, return_html=True)
-              # Render with Streamlit components
-              components.html(pyg_html, scrolling=True, height=1000)
-           else:
-              st.warning("No data available for visualization.")        
-
-
 # model building
 
         Model_Building_expander = st.sidebar.expander("Model Building", expanded=False)
@@ -1199,7 +1192,15 @@ if 'df' in st.session_state:
                     except Exception as e:
                         st.error(f"Error processing dataset: {e}")
 
+
 st.sidebar.markdown("________________________")
+# clean data download
+        down = st.sidebar.toggle("Download Clean Data")
+        if down:
+            file_name = st.sidebar.text_input("Enter file name to save:", "cleaned_data.csv")
+            if st.sidebar.button("Download Data"):
+                download_clean_data(st.session_state.df, file_name)
+                st.success(f"File saved as {file_name}!")
 
 # about page
 if st.sidebar.button("About"):
