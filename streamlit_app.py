@@ -1195,13 +1195,12 @@ if 'df' in st.session_state:
 
 st.sidebar.markdown("________________________")
 # clean data download
-        down = st.sidebar.toggle("Download Clean Data")
-        if down:
-            file_name = st.sidebar.text_input("Enter file name to save:", "cleaned_data.csv")
-            if st.sidebar.button("Download Data"):
-                download_clean_data(st.session_state.df, file_name)
-                st.success(f"File saved as {file_name}!")
-
+down = st.sidebar.toggle("Download Clean Data")
+if down:
+   file_name = st.sidebar.text_input("Enter file name to save:", "cleaned_data.csv")
+   if st.sidebar.button("Download Data"):
+       download_clean_data(st.session_state.df, file_name)
+       st.success(f"File saved as {file_name}!")
 # about page
 if st.sidebar.button("About"):
     about()
