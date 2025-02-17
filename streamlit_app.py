@@ -1539,10 +1539,10 @@ if external_link and st.sidebar.button("Fetch Data"):
         st.session_state.df = df
 
 if 'df' in st.session_state:
-   # data profiling 
-   eda = st.sidebar.toggle("EDA Report")
-   if eda:
-      eda(st.session_state.df)
+# data profiling 
+        eda = st.sidebar.toggle("EDA Report")
+        if eda:
+           eda(st.session_state.df)
 # clean data download
         down = st.sidebar.toggle("Download Clean Data")
         if down:
