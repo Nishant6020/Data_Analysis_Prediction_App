@@ -1521,7 +1521,7 @@ import scipy.stats
 # Streamlit App
 import pygwalker as pyg 
 st.title("Data Analysis & Model Building App")
-set_page_config()
+set_page_config(page_title="Data Analysis & Model Building App)
 st.sidebar.title("Menu")
 st.sidebar.markdown("________________________")
 if st.sidebar.button("clear old cache"):
