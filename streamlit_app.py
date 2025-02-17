@@ -1120,7 +1120,7 @@ if down:
        st.success(f"File saved as {file_name}!")
 # about page
 if st.sidebar.button("About"):
-    about()
+    home()
 # Contact page
 if st.sidebar.button("Contact"):
     contact()
