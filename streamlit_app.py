@@ -1586,9 +1586,9 @@ if 'df' in st.session_state:
                eda(st.session_state.df)
             elif prerview_option == "Pyg":
                # Visualize
-               pyg_html = pyg.walk(st.session_state.df,return_html=True)
+               pyg_html = pyg.walk(st.session_state.df, return_html=True)
                # Render with components
-               stc.html(pyg_html,scrolling=True,height=1000)
+               stc.html(pyg_html, scrolling=True, height=1000)
 
 
         
