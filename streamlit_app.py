@@ -7,7 +7,7 @@ from home import home
 from contact import contact
 from prediction import prediction
 from function import load_data
-# from ydata_profiling import ProfileReport
+from eda import *
 
 
 # Sidebar
