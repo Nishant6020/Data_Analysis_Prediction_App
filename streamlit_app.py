@@ -1591,8 +1591,8 @@ if 'df' in st.session_state:
                     pyg_html = pyg.walk(st.session_state.df, return_html=True)
                     # Render with Streamlit components
                     components.html(pyg_html, scrolling=True, height=1000)
-                else:
-                    st.warning("No data available for visualization.")        
+               else:
+                  st.warning("No data available for visualization.")        
 
         # Data Overview Section (Initially hidden)
         data_overview_expander = st.sidebar.expander("Data Overview", expanded=False)
