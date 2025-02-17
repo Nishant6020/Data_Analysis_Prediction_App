@@ -1539,10 +1539,6 @@ if external_link and st.sidebar.button("Fetch Data"):
         st.session_state.df = df
 
 if 'df' in st.session_state:
-# data profiling 
-        eda = st.sidebar.toggle("EDA Report")
-        if eda:
-           eda(st.session_state.df)
 # clean data download
         down = st.sidebar.toggle("Download Clean Data")
         if down:
@@ -1564,6 +1560,7 @@ if 'df' in st.session_state:
                 "20 Rows",
                 "50 Rows",
                 "Sample Data",
+               "EDA Report",
             ])         
             # Handle Data prerview tasks
             if prerview_option == "Data Preview":
@@ -1580,6 +1577,8 @@ if 'df' in st.session_state:
                 st.write(st.session_state.df.head(50))
             elif prerview_option == "Sample Data":
                 sample_data(st.session_state.df)
+            elif prerview_option == "EDA Report":
+               eda(st.session_state.df)
         
 
         # Data Overview Section (Initially hidden)
