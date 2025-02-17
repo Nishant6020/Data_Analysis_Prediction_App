@@ -10,3 +10,4 @@ plotly
 joblib
 xgboost
 scipy
+setuptools==75.8.0
