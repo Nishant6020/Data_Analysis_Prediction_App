@@ -9,4 +9,4 @@ ydata-profiling
 plotly
 joblib
 xgboost
-
+scipy
