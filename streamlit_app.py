@@ -1519,6 +1519,7 @@ import plotly.express as px
 import plotly.graph_objects as go
 import scipy.stats
 import pygwalker as pyg 
+from pygwalker.api.streamlit import StreamlitRenderer
 
 # Streamlit App
 st.set_page_config(page_title="Data Analysis & Model Building App",layout="wide")
