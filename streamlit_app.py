@@ -27,16 +27,12 @@ def main():
             df = load_data(data_file)
             st.dataframe(df)
             # Visualize
-            pyg_html = pyg.walk(df,return_html=True)
-            # Render with components
-            stc.html(pyg_html,scrolling=True,height=1000)
-
-        
-        
+            # pyg_html = pyg.walk(df,return_html=True)
+            # # Render with components
+            # stc.html(pyg_html,scrolling=True,height=1000)      
     
     else:
         st.subheader("About")
-
     
 if __name__ == "__main__":
     main()
