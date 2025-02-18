@@ -1206,17 +1206,13 @@ st.sidebar.markdown("________________________")
 down = st.sidebar.toggle("Download Clean Data")
 if down:
    file_name = st.sidebar.text_input("Enter file name:", "cleaned_data.csv")
-    if st.sidebar.button("Download Data"):
-    if "df" in st.session_state and not st.session_state.df.empty:
-        csv_data = download_clean_data(st.session_state.df)
-        st.download_button(
-            label="Click here to download",
-            data=csv_data,
-            file_name=file_name,
-            mime="text/csv"
-        )
-    else:
-        st.error("No data available for download.")
+   if st.sidebar.button("Download Data"):
+       if "df" in st.session_state and not st.session_state.df.empty:
+           csv_data = download_clean_data(st.session_state.df)
+           st.download_button(
+               label="Click here to download", data=csv_data, file_name=file_name, mime="text/csv")
+   else:
+       st.error("No data available for download.")
    
 # about page
 if st.sidebar.button("About"):
