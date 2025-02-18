@@ -701,7 +701,6 @@ if external_link and st.sidebar.button("Fetch Data"):
 if 'df' in st.session_state:
         st.sidebar.markdown("________________________")  
         st.sidebar.title("Menu")
-        with col1:
         # Data prerview Section (Initially hidden)
         data_prerview_expander = st.sidebar.expander("Data Preview", expanded=False)
         if data_prerview_expander:
