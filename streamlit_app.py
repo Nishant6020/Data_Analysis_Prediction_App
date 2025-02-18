@@ -1097,7 +1097,7 @@ if 'df' in st.session_state:
         graph_option = st.sidebar.toggle("Switch to Plotly")
         if graph_option:
             visual_expander = st.sidebar.expander("Visualization", expanded=False)       
-            Visual_option = st.sidebar.selectbox("Select a task for Visualization", [
+            Visual_option = st.sidebar.selectbox("Plotly Visualization", [
                 "Select Option","Pair Plot", "Bar Plot", "Correlation Heatmap", "Scatter Plot", "Histogram","Line Chart",
                 "Pie Chart","Box Plot","Count Plot","KDE Plot","Skewness & Kurtosis",
             ])
@@ -1141,7 +1141,7 @@ if 'df' in st.session_state:
                 st.header("KDE Plot")
                 create_kde_plot(st.session_state.df)
         else:
-            Visual_option = st.sidebar.selectbox("Select a task for Visualization", [
+            Visual_option = st.sidebar.selectbox("Seaborn Visualization", [
                     "Select Option","Pair Plot", "Bar Plot", "Correlation Heatmap", "Scatter Plot", "Histogram","Line Chart",
                     "Pie Chart","Box Plot", "Count Plot", "Distribution Plot", 
                 ])
@@ -1187,7 +1187,7 @@ if 'df' in st.session_state:
                 st.write(mat_create_kde_plot(st.session_state.df))
 
 # visualization
-        Visual = st.sidebar.toggle("Visualization")
+        Visual = st.sidebar.toggle("Advance Visualization")
         if Visual:
            if st.session_state.df is not None:
               # Generate Pygwalker HTML
@@ -1195,7 +1195,7 @@ if 'df' in st.session_state:
               # Render with Streamlit components
               components.html(pyg_html, scrolling=True, height=1000)
            else:
-              st.warning("No data available for visualization.")        
+              st.warning("No data available for Advance visualization.")        
 
 
 st.sidebar.markdown("________________________")
