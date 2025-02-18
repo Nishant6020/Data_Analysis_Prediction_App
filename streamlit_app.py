@@ -680,11 +680,8 @@ from data_visualization import *
 
 # Streamlit App
 st.set_page_config(page_title="Data Analysis & Model Building App",layout="wide")
-col1, col2 = st.columns([1, 5])  # Adjust width ratio as needed
-with col1:
-    st.sidebar.image("data.png")
-with col2:
-    st.sidebar.title("Data Analysis & Model Building App")
+st.sidebar.image("data.png")
+
 uploaded_file = st.sidebar.file_uploader("Upload your data file (CSV, Excel, JSON)", type=['csv', 'xlsx', 'xls', 'json'])
 if uploaded_file:
     df = load_data(uploaded_file)
