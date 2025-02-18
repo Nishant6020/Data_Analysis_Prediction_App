@@ -704,6 +704,8 @@ if 'df' in st.session_state:
         # Data prerview Section (Initially hidden)
         data_prerview_expander = st.sidebar.expander("Data Preview", expanded=False)
         if data_prerview_expander:
+            st.title("Data Preview")
+            st.markdown("________________________")
             prerview_option = st.sidebar.selectbox("Data Preview", [
                 "Select Option",
                 "Data Preview",
