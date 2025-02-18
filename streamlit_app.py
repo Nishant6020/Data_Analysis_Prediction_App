@@ -681,11 +681,7 @@ from data_visualization import *
 # Streamlit App
 st.set_page_config(page_title="Data Analysis & Model Building App",layout="wide")
 st.title("Data Analysis & Model Building App")
-st.sidebar.title("Menu")
 st.sidebar.markdown("________________________")
-if st.sidebar.button("clear old cache"):
-    clear_data()
-
 uploaded_file = st.sidebar.file_uploader("Upload your data file (CSV, Excel, JSON)", type=['csv', 'xlsx', 'xls', 'json'])
 if uploaded_file:
     df = load_data(uploaded_file)
@@ -702,7 +698,8 @@ if external_link and st.sidebar.button("Fetch Data"):
         st.session_state.df = df
 
 if 'df' in st.session_state:
-        st.sidebar.markdown("________________________")   
+        st.sidebar.markdown("________________________")  
+        st.sidebar.title("Menu")
         # Data prerview Section (Initially hidden)
         data_prerview_expander = st.sidebar.expander("Data Preview", expanded=False)
         if data_prerview_expander:
@@ -1209,11 +1206,14 @@ if down:
    if st.sidebar.button("Download Data"):
        if "df" in st.session_state and not st.session_state.df.empty:
            csv_data = download_clean_data(st.session_state.df)
-           st.download_button(
+           st.sidebar.download_button(
                label="Click here to download", data=csv_data, file_name=file_name, mime="text/csv")
    else:
        st.error("No data available for download.")
-   
+# clear old data cache 
+if st.sidebar.button("clear old cache"):
+    clear_data()
+ 
 # about page
 if st.sidebar.button("About"):
     home()
