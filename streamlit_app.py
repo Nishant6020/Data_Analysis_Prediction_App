@@ -1200,16 +1200,16 @@ if 'df' in st.session_state:
 
 st.sidebar.markdown("________________________")
 # clean data download
-down = st.sidebar.toggle("Download Clean Data")
-if down:
-   file_name = st.sidebar.text_input("Enter file name:", "cleaned_data.csv")
-   if st.sidebar.button("Download Data"):
-       if "df" in st.session_state and not st.session_state.df.empty:
-           csv_data = download_clean_data(st.session_state.df)
-           st.sidebar.download_button(
-               label="Click here to download", data=csv_data, file_name=file_name, mime="text/csv")
-   # else:
-   #     st.sidebar.error("No data available for download.")
+# down = st.sidebar.toggle("Download Clean Data")
+# if down:
+file_name = st.sidebar.text_input("Enter file name:", "cleaned_data.csv")
+if st.sidebar.button("Download Data"):
+   if "df" in st.session_state and not st.session_state.df.empty:
+       csv_data = download_clean_data(st.session_state.df)
+       st.sidebar.download_button(
+           label="Click here to download", data=csv_data, file_name=file_name, mime="text/csv")
+# else:
+#     st.sidebar.error("No data available for download.")
 # clear old data cache 
 if st.sidebar.button("clear old cache"):
     clear_data()
