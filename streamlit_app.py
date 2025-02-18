@@ -1208,8 +1208,8 @@ if down:
            csv_data = download_clean_data(st.session_state.df)
            st.sidebar.download_button(
                label="Click here to download", data=csv_data, file_name=file_name, mime="text/csv")
-   else:
-       st.error("No data available for download.")
+   # else:
+   #     st.sidebar.error("No data available for download.")
 # clear old data cache 
 if st.sidebar.button("clear old cache"):
     clear_data()
