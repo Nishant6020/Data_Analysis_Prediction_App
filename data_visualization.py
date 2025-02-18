@@ -92,9 +92,9 @@ def create_heatmap(df):
     st.plotly_chart(fig)
 
 def create_scatter(df):
-    x_col = st.selectbox('X-axis (Only Numeric Columns are Valid) :', df.select_dtypes(include=['number']).columns.tolist())
-    y_col = st.selectbox('Y-axis (Only Numeric Columns are Valid) :', df.select_dtypes(include=['number']).columns.tolist())
-    hue_col = st.selectbox('Hue:', [None] + list(df.columns))
+    x_col = st.selectbox('X-axis:', df.select_dtypes(include=['number']).columns.tolist())
+    y_col = st.selectbox('Y-axis:', df.select_dtypes(include=['number']).columns.tolist())
+    hue_col = st.selectbox('Hue:', [None] + df.select_dtypes(include=['object', 'category']).columns.tolist())
     style_col = st.selectbox('Style:', [None] + list(df.columns))
     size_col = st.selectbox('Size:', [None] + list(df.select_dtypes(include=['number']).columns.tolist()))
     title = st.text_input("Enter title for the scatter plot", value=f"{x_col} vs {y_col} scatter Plot")
@@ -155,7 +155,7 @@ def create_scatter(df):
     st.plotly_chart(fig)
 
 def create_histogram(df):
-    x = st.selectbox("Select Numerical Variable", df.select_dtypes(include=['number']).columns.tolist())   
+    x = st.selectbox("Select columns", df.select_dtypes(include=['number']).columns.tolist())   
     hue = st.selectbox("Select Column for Color (Optional)", ['None'] + df.columns.tolist())
     stat = st.selectbox("Select Stat", ['count', 'percent', 'probability', 'density', 'probability density'])
     barmode = st.selectbox("Select Bar Mode", ['stack', 'group', 'overlay', 'relative'])
@@ -398,8 +398,8 @@ def mat_create_bar_plot(df):
             date_columns.remove(col)
 
     # Select x and y columns
-    x_column = st.selectbox('Select the X-axis column', df.columns)
-    y_column = st.selectbox('Select the Y-axis column', df.columns)
+    x_column = st.selectbox('Select X column', df.columns)
+    y_column = st.selectbox('Select Y column', df.columns)
     plot_type = st.selectbox('Select plot type', ['Vertical', 'Horizontal'])
     title = st.text_input("Enter title for the Bar Plot", value=f"{x_column} vs {y_column} Bar Plot")
     hue = st.selectbox('Select Hue', [None] + list(df.columns))
@@ -468,9 +468,9 @@ def mat_create_scatter(df):
     # Define options for user input
     def get_unique_values(column):
         return sorted(df[column].unique().tolist())
-    x_col = st.selectbox('X-axis:', df.columns)
-    y_col = st.selectbox('Y-axis:', df.columns)
-    hue_col = st.selectbox('Hue:', [None] + list(df.columns), format_func=lambda x: 'None' if x is None else x)
+    x_col = st.selectbox('X-axis:', df.select_dtypes(include=['number']))
+    y_col = st.selectbox('Y-axis:', df.select_dtypes(include=['number']))
+    hue_col = st.selectbox('Hue:', [None] + df.select_dtypes(include=['object', 'category']).columns.tolist(), format_func=lambda x: 'None' if x is None else x)
     style_col = st.selectbox('Style:', [None] + list(df.columns), format_func=lambda x: 'None' if x is None else x)
     size_col = st.selectbox('Size:', [None] + list(df.columns), format_func=lambda x: 'None' if x is None else x)
     title = st.text_input("Enter title for the scatter plot", value=f"{x_col} vs {y_col} scatter Plot")
