@@ -682,9 +682,9 @@ from data_visualization import *
 st.set_page_config(page_title="Data Analysis & Model Building App",layout="wide")
 col1, col2 = st.columns([1, 5])  # Adjust width ratio as needed
 with col1:
-    st.image("logo.png", width=100)
+    st.sidebar.image("logo.png", width=100)
 with col2:
-    st.title("Data Analysis & Model Building App")
+    st.sidebar.title("Data Analysis & Model Building App")
 uploaded_file = st.sidebar.file_uploader("Upload your data file (CSV, Excel, JSON)", type=['csv', 'xlsx', 'xls', 'json'])
 if uploaded_file:
     df = load_data(uploaded_file)
