@@ -1202,17 +1202,6 @@ if 'df' in st.session_state:
                 st.header("Distribution Plot")
                 st.write(mat_create_kde_plot(st.session_state.df))
 
-        powerbi = st.sidebar.toggle("Visualization")
-        if powerbi:
-           if st.session_state.df is not None:
-              # Generate Pygwalker HTML
-              pyg_html = pyg.walk(st.session_state.df, return_html=True)
-              # Render with Streamlit components
-              components.html(pyg_html, scrolling=True, height=1000)
-           else:
-              st.warning("No data available for visualization.")        
-
-
 
 st.sidebar.markdown("________________________")
 # clean data download
