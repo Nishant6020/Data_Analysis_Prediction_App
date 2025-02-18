@@ -197,8 +197,8 @@ def create_histogram(df):
 
 def create_line_plot(df):
     # Select X and Y variables
-    x = st.selectbox("Select X (numerical) column", df.select_dtypes(include=['number']).columns.tolist())
-    y = st.selectbox("Select Y (numerical) column", df.select_dtypes(include=['number']).columns.tolist())
+    x = st.selectbox("Select X column", df.select_dtypes(include=['number']).columns.tolist())
+    y = st.selectbox("Select Y column", df.select_dtypes(include=['number']).columns.tolist())
     
     # Select optional parameters
     hue = st.selectbox("Select Hue (categorical variable)", [None] + df.select_dtypes(include=['object', 'category']).columns.tolist())
@@ -286,8 +286,8 @@ def create_boxplot(df):
     cat_columns = df.select_dtypes(include=['object', 'category']).columns.tolist()
     num_columns = df.select_dtypes(include=['number']).columns.tolist()
 
-    x_col = st.selectbox("Select X (categorical) variable", num_columns + cat_columns)
-    y_col = st.selectbox("Select Y (numerical) variable", [None]+ num_columns + cat_columns)
+    x_col = st.selectbox("Select X column", num_columns + cat_columns)
+    y_col = st.selectbox("Select Y column", [None]+ num_columns + cat_columns)
     hue = st.selectbox("Select Hue (categorical variable)", [None] + cat_columns)
     title = st.text_input("Enter title for the box plot", value=f"{x_col} vs {y_col} box plot")
     
@@ -306,7 +306,7 @@ def create_count_plot(df):
         st.warning("No categorical columns available in the DataFrame.")
         return
 
-    x = st.selectbox("Select X (categorical) variable", cat_columns)
+    x = st.selectbox("Select X column", cat_columns)
     hue = st.selectbox("Select Hue (categorical variable)", [None] + cat_columns)
     stat = st.selectbox("Select Stat", ['count', 'percent', 'proportion', 'probability'])
     add_avg_line = st.checkbox('Add Average Line', value=False)
@@ -673,8 +673,8 @@ def mat_create_boxplot(df):
     cat_columns = df.select_dtypes(include=['object', 'category']).columns.tolist()
     num_columns = df.select_dtypes(include=['number']).columns.tolist()
 
-    x_col = st.selectbox("Select X (categorical) variable", num_columns + cat_columns)
-    y_col = st.selectbox("Select Y (numerical) variable", [None]+ num_columns + cat_columns)
+    x_col = st.selectbox("Select X column", num_columns + cat_columns)
+    y_col = st.selectbox("Select Y column", [None]+ num_columns + cat_columns)
     hue = st.selectbox("Select Hue (categorical variable)", [None] + cat_columns)
     palette = st.selectbox("Select Color Palette", 
                            ['bright', 'tab10', 'deep', 'muted', 'dark', 'Paired', 'Set2', 
@@ -691,7 +691,7 @@ def mat_create_boxplot(df):
         st.warning("Please select valid X and Y variables.")
 
 def mat_create_count_plot(df):
-    x = st.selectbox("Select X (categorical) variable", df.select_dtypes(include=['object', 'category']).columns.tolist())
+    x = st.selectbox("Select X column", df.select_dtypes(include=['object', 'category']).columns.tolist())
     cat_columns = df.select_dtypes(include=['object', 'category']).columns.tolist()
     num_columns = df.select_dtypes(include=['number']).columns.tolist()
     hue = st.selectbox("Select Hue (categorical variable)", [None] + df.select_dtypes(include=['object', 'category']).columns.tolist())
