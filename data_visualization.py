@@ -28,8 +28,8 @@ def create_bar_plot(df):
         return None
     num_columns = df.select_dtypes(include=['number']).columns.tolist()
     cat_columns = df.select_dtypes(include=['object', 'category']).columns.tolist()
-    x_column = st.selectbox('Select the X-axis column', df.columns)
-    y_column = st.selectbox('Select the Y-axis column', df.columns)
+    x_column = st.selectbox('Select X column', df.columns)
+    y_column = st.selectbox('Select Y column', df.columns)
     hue = st.selectbox('Select Hue', [None] + cat_columns)
     add_avg_line = st.checkbox('Add Average Line', value=False)
 
@@ -92,8 +92,8 @@ def create_heatmap(df):
     st.plotly_chart(fig)
 
 def create_scatter(df):
-    x_col = st.selectbox('X-axis:', df.select_dtypes(include=['number']).columns.tolist())
-    y_col = st.selectbox('Y-axis:', df.select_dtypes(include=['number']).columns.tolist())
+    x_col = st.selectbox('Select X column:', df.select_dtypes(include=['number']).columns.tolist())
+    y_col = st.selectbox('Select Y column:', df.select_dtypes(include=['number']).columns.tolist())
     hue_col = st.selectbox('Hue:', [None] + df.select_dtypes(include=['object', 'category']).columns.tolist())
     style_col = st.selectbox('Style:', [None] + list(df.columns))
     size_col = st.selectbox('Size:', [None] + list(df.select_dtypes(include=['number']).columns.tolist()))
@@ -468,8 +468,8 @@ def mat_create_scatter(df):
     # Define options for user input
     def get_unique_values(column):
         return sorted(df[column].unique().tolist())
-    x_col = st.selectbox('X-axis:', df.select_dtypes(include=['number']))
-    y_col = st.selectbox('Y-axis:', df.select_dtypes(include=['number']))
+    x_col = st.selectbox('Select X column:', df.select_dtypes(include=['number']))
+    y_col = st.selectbox('Select Y column:', df.select_dtypes(include=['number']))
     hue_col = st.selectbox('Hue:', [None] + df.select_dtypes(include=['object', 'category']).columns.tolist(), format_func=lambda x: 'None' if x is None else x)
     style_col = st.selectbox('Style:', [None] + list(df.columns), format_func=lambda x: 'None' if x is None else x)
     size_col = st.selectbox('Size:', [None] + list(df.columns), format_func=lambda x: 'None' if x is None else x)
