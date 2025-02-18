@@ -680,6 +680,7 @@ from data_visualization import *
 
 # Streamlit App
 st.set_page_config(page_title="Data Analysis & Model Building App",layout="wide")
+st.image("logo.png", width=100)
 st.title("Data Analysis & Model Building App")
 uploaded_file = st.sidebar.file_uploader("Upload your data file (CSV, Excel, JSON)", type=['csv', 'xlsx', 'xls', 'json'])
 if uploaded_file:
