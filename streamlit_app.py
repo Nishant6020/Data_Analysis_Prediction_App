@@ -675,7 +675,7 @@ import streamlit.components.v1 as components
 import pygwalker as pyg 
 from home import home
 from contact import contact
-
+from data_visualization import *
 
 # Streamlit App
 st.set_page_config(page_title="Data Analysis & Model Building App",layout="wide")
@@ -1009,7 +1009,6 @@ if 'df' in st.session_state:
                     # Refresh the page to reflect the changes
                     st.rerun()
 # model building
-
         Model_Building_expander = st.sidebar.expander("Model Building", expanded=False)
         if Model_Building_expander:
             Model_Building_option = st.sidebar.selectbox("Machine Learning & Testing", [
@@ -1108,6 +1107,111 @@ if 'df' in st.session_state:
 
                     except Exception as e:
                         st.error(f"Error processing dataset: {e}")
+
+
+# visualisation
+        graph_option = st.sidebar.toggle("Switch to Plotly")
+        if graph_option:
+            visual_expander = st.sidebar.expander("Visualization", expanded=False)       
+            Visual_option = st.sidebar.selectbox("Select a task for Visualization", [
+                "Select Option","Pair Plot", "Bar Plot", "Correlation Heatmap", "Scatter Plot", "Histogram","Line Chart",
+                "Pie Chart","Box Plot","Count Plot","KDE Plot","Skewness & Kurtosis",
+            ])
+            if Visual_option == "Pair Plot":
+                st.header("Pair Plot")
+                create_pairplot(st.session_state.df)
+
+            elif Visual_option == "Bar Plot":
+                st.header("Bar Plot")
+                create_bar_plot(st.session_state.df)
+
+            elif Visual_option == "Correlation Heatmap":
+                st.header("Correlation Heatmap")
+                create_heatmap(st.session_state.df)
+
+            elif Visual_option == "Scatter Plot":
+                st.header("Scatter Plot")
+                create_scatter(st.session_state.df)
+
+            elif Visual_option == "Histogram":
+                st.header("Histogram")
+                st.write(create_histogram(st.session_state.df))
+
+            elif Visual_option == "Line Chart":
+                st.header("Line Chart")
+                create_line_plot(st.session_state.df)
+
+            elif Visual_option == "Pie Chart":
+                st.header("Pie Chart")
+                create_pie_chart(st.session_state.df)
+
+            elif Visual_option == "Box Plot":
+                st.header("Box Plot")
+                create_boxplot(st.session_state.df)
+
+            elif Visual_option == "Count Plot":
+                st.header("Count Plot")
+                create_count_plot(st.session_state.df)
+
+            elif Visual_option == "KDE Plot":
+                st.header("KDE Plot")
+                create_kde_plot(st.session_state.df)
+        else:
+            Visual_option = st.sidebar.selectbox("Select a task for Visualization", [
+                    "Select Option","Pair Plot", "Bar Plot", "Correlation Heatmap", "Scatter Plot", "Histogram","Line Chart",
+                    "Pie Chart","Box Plot", "Count Plot", "Distribution Plot", 
+                ])
+            if Visual_option == "Pair Plot":
+                st.header("Pair Plot")
+                st.write(mat_create_pairplot(st.session_state.df))
+
+            elif Visual_option == "Bar Plot":
+                st.header("Bar Plot")
+                fig = mat_create_bar_plot(st.session_state.df)
+                st.pyplot(fig)
+
+            elif Visual_option == "Correlation Heatmap":
+                fig = mat_create_heatmap(st.session_state.df)
+                if fig is not None:
+                    st.pyplot(fig)
+
+            elif Visual_option == "Scatter Plot":
+                st.write(mat_create_scatter(st.session_state.df))
+
+            elif Visual_option == "Histogram":
+                st.header("Histogram")
+                st.write(mat_create_histplot(st.session_state.df))
+
+            elif Visual_option == "Line Chart":
+                st.header("Line Chart")
+                st.write(mat_create_line_plot(st.session_state.df))
+
+            elif Visual_option == "Pie Chart":
+                st.header("Pie Chart")
+                st.write(mat_create_pie_chart(st.session_state.df))
+
+            elif Visual_option == "Box Plot":
+                st.header("Box Plot")
+                st.write(mat_create_boxplot(st.session_state.df))
+
+            elif Visual_option == "Count Plot":
+                st.header("Count Plot")
+                st.write(mat_create_count_plot(st.session_state.df))
+
+            elif Visual_option == "Distribution Plot":
+                st.header("Distribution Plot")
+                st.write(mat_create_kde_plot(st.session_state.df))
+
+        powerbi = st.sidebar.toggle("Visualization")
+        if powerbi:
+           if st.session_state.df is not None:
+              # Generate Pygwalker HTML
+              pyg_html = pyg.walk(st.session_state.df, return_html=True)
+              # Render with Streamlit components
+              components.html(pyg_html, scrolling=True, height=1000)
+           else:
+              st.warning("No data available for visualization.")        
+
 
 
 st.sidebar.markdown("________________________")
