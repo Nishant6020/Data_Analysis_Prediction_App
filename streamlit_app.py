@@ -126,9 +126,10 @@ def encode_categorical(df, columns):
         df[col] = encoder.fit_transform(df[col])
     return unique_columns(df)
 
-def download_clean_data(df, file_name):
-    df.to_csv(file_name, index=False)
-    return file_name
+def download_clean_data(df):
+    # Convert DataFrame to CSV in memory
+    csv = df.to_csv(index=False).encode("utf-8")
+    return csv
 
 def fill_missing_values(df, column, method=None):
     df_cleaned = df.copy()
@@ -701,20 +702,7 @@ if external_link and st.sidebar.button("Fetch Data"):
         st.session_state.df = df
 
 if 'df' in st.session_state:
-        st.sidebar.markdown("________________________")
-   
-# visualization
-        Visual = st.sidebar.toggle("Visualization")
-        if Visual:
-           if st.session_state.df is not None:
-              # Generate Pygwalker HTML
-              pyg_html = pyg.walk(st.session_state.df, return_html=True)
-              # Render with Streamlit components
-              components.html(pyg_html, scrolling=True, height=1000)
-           else:
-              st.warning("No data available for visualization.")        
-   
-   
+        st.sidebar.markdown("________________________")   
         # Data prerview Section (Initially hidden)
         data_prerview_expander = st.sidebar.expander("Data Preview", expanded=False)
         if data_prerview_expander:
@@ -1108,7 +1096,6 @@ if 'df' in st.session_state:
                     except Exception as e:
                         st.error(f"Error processing dataset: {e}")
 
-
 # visualisation
         graph_option = st.sidebar.toggle("Switch to Plotly")
         if graph_option:
@@ -1202,15 +1189,35 @@ if 'df' in st.session_state:
                 st.header("Distribution Plot")
                 st.write(mat_create_kde_plot(st.session_state.df))
 
+# visualization
+        Visual = st.sidebar.toggle("Visualization")
+        if Visual:
+           if st.session_state.df is not None:
+              # Generate Pygwalker HTML
+              pyg_html = pyg.walk(st.session_state.df, return_html=True)
+              # Render with Streamlit components
+              components.html(pyg_html, scrolling=True, height=1000)
+           else:
+              st.warning("No data available for visualization.")        
+
 
 st.sidebar.markdown("________________________")
 # clean data download
 down = st.sidebar.toggle("Download Clean Data")
 if down:
-   file_name = st.sidebar.text_input("Enter file name to save:", "cleaned_data.csv")
-   if st.sidebar.button("Download Data"):
-       download_clean_data(st.session_state.df, file_name)
-       st.success(f"File saved as {file_name}!")
+   file_name = st.sidebar.text_input("Enter file name:", "cleaned_data.csv")
+    if st.sidebar.button("Download Data"):
+    if "df" in st.session_state and not st.session_state.df.empty:
+        csv_data = download_clean_data(st.session_state.df)
+        st.download_button(
+            label="Click here to download",
+            data=csv_data,
+            file_name=file_name,
+            mime="text/csv"
+        )
+    else:
+        st.error("No data available for download.")
+   
 # about page
 if st.sidebar.button("About"):
     home()
