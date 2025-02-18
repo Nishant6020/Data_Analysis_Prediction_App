@@ -704,8 +704,6 @@ if 'df' in st.session_state:
         # Data prerview Section (Initially hidden)
         data_prerview_expander = st.sidebar.expander("Data Preview", expanded=False)
         if data_prerview_expander:
-            st.title("Data Preview")
-            st.markdown("________________________")
             prerview_option = st.sidebar.selectbox("Data Preview", [
                 "Select Option",
                 "Data Preview",
@@ -739,8 +737,6 @@ if 'df' in st.session_state:
         # Data Overview Section (Initially hidden)
         data_overview_expander = st.sidebar.expander("Data Overview", expanded=False)
         if data_overview_expander:
-            st.title("Data Overview")
-            st.markdown("________________________")
             overview_option = st.sidebar.selectbox("Data Overview", [
                 "Select Option",
                 "Data info",
@@ -823,8 +819,6 @@ if 'df' in st.session_state:
         # Data Cleaning Section (Initially hidden)
         data_cleaning_expander = st.sidebar.expander("Data Cleaning", expanded=False)
         if data_cleaning_expander:
-            st.title("Data Cleaning")
-            st.markdown("________________________")
             cleaning_option = st.sidebar.selectbox("Data Cleaning", [
                 "Select Option",
                 "Change Data Type",
@@ -1004,8 +998,6 @@ if 'df' in st.session_state:
         # model building
         Model_Building_expander = st.sidebar.expander("Model Building", expanded=False)
         if Model_Building_expander:
-            st.title("Machine Learning Model Building & Testing")
-            st.markdown("________________________")
             Model_Building_option = st.sidebar.selectbox("Machine Learning & Testing", [
                 "Select Option","Model Building", "Test Model"
             ])  
@@ -1105,8 +1097,6 @@ if 'df' in st.session_state:
         # visualisation
         graph_option = st.sidebar.toggle("Switch to Plotly")
         if graph_option:
-            st.title("Data Visualization")
-            st.markdown("________________________")
             visual_expander = st.sidebar.expander("Visualization", expanded=False)       
             Visual_option = st.sidebar.selectbox("Plotly Visualization", [
                 "Select Option","Pair Plot", "Bar Plot", "Correlation Heatmap", "Scatter Plot", "Histogram","Line Chart",
