@@ -681,7 +681,6 @@ from data_visualization import *
 # Streamlit App
 st.set_page_config(page_title="Data Analysis & Model Building App",layout="wide")
 st.title("Data Analysis & Model Building App")
-st.sidebar.markdown("________________________")
 uploaded_file = st.sidebar.file_uploader("Upload your data file (CSV, Excel, JSON)", type=['csv', 'xlsx', 'xls', 'json'])
 if uploaded_file:
     df = load_data(uploaded_file)
