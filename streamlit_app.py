@@ -704,9 +704,9 @@ if 'df' in st.session_state:
         st.sidebar.title("Menu")
         with col1:
             # Data prerview Section (Initially hidden)
-            data_prerview_expander = st.sidebar.expander("Data Preview", expanded=False)
+            data_prerview_expander = st.expander("Data Preview", expanded=False)
             if data_prerview_expander:
-                prerview_option = st.sidebar.selectbox("Data Preview", [
+                prerview_option = st.selectbox("Data Preview", [
                     "Select Option",
                     "Data Preview",
                     "First 5 Rows",
@@ -738,9 +738,9 @@ if 'df' in st.session_state:
 
         with col2:
             # Data Overview Section (Initially hidden)
-            data_overview_expander = st.sidebar.expander("Data Overview", expanded=False)
+            data_overview_expander = st.expander("Data Overview", expanded=False)
             if data_overview_expander:
-                overview_option = st.sidebar.selectbox("Data Overview", [
+                overview_option = st.selectbox("Data Overview", [
                     "Select Option",
                     "Data info",
                     "Statistics Summary",
@@ -820,9 +820,9 @@ if 'df' in st.session_state:
                     plot_skewness_kurtosis(st.session_state.df)
         with col3:
             # Data Cleaning Section (Initially hidden)
-            data_cleaning_expander = st.sidebar.expander("Data Cleaning", expanded=False)
+            data_cleaning_expander = st.expander("Data Cleaning", expanded=False)
             if data_cleaning_expander:
-                cleaning_option = st.sidebar.selectbox("Data Cleaning", [
+                cleaning_option = st.selectbox("Data Cleaning", [
                     "Select Option",
                     "Change Data Type",
                     "Fill Missing Values",
@@ -1000,9 +1000,9 @@ if 'df' in st.session_state:
 
         with col4:
             # model building
-            Model_Building_expander = st.sidebar.expander("Model Building", expanded=False)
+            Model_Building_expander = st.expander("Model Building", expanded=False)
             if Model_Building_expander:
-                Model_Building_option = st.sidebar.selectbox("Machine Learning & Testing", [
+                Model_Building_option = st.selectbox("Machine Learning & Testing", [
                     "Select Option","Model Building", "Test Model"
                 ])  
                 
@@ -1102,8 +1102,8 @@ if 'df' in st.session_state:
             # visualisation
             graph_option = st.sidebar.toggle("Switch to Plotly")
             if graph_option:
-                visual_expander = st.sidebar.expander("Visualization", expanded=False)       
-                Visual_option = st.sidebar.selectbox("Plotly Visualization", [
+                visual_expander = st.expander("Visualization", expanded=False)       
+                Visual_option = st.selectbox("Plotly Visualization", [
                     "Select Option","Pair Plot", "Bar Plot", "Correlation Heatmap", "Scatter Plot", "Histogram","Line Chart",
                     "Pie Chart","Box Plot","Count Plot","KDE Plot","Skewness & Kurtosis",
                 ])
