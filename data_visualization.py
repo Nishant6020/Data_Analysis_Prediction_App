@@ -10,7 +10,7 @@ import plotly.graph_objects as go
 
 def create_pairplot(df):
     kind = st.selectbox("Select type of kind", ['scatter', 'hist', 'reg'])
-    hue = st.selectbox("Select Hue (categorical variable)", [None] + df.select_dtypes(include=['object', 'category']).columns.tolist())
+    hue = st.selectbox("Select Hue (categorical column)", [None] + df.select_dtypes(include=['object', 'category']).columns.tolist())
     palette = st.selectbox("Select Color Palette", ['bright', 'tab10', 'deep', 'muted', 'dark', 'Paired', 'Set2', 'colorblind', 'rocket', 'viridis', 'icefire', 'Spectral'])
     
     if kind == 'scatter':
@@ -196,12 +196,12 @@ def create_histogram(df):
     return fig
 
 def create_line_plot(df):
-    # Select X and Y variables
+    # Select X and Y columns
     x = st.selectbox("Select X column", df.select_dtypes(include=['number']).columns.tolist())
     y = st.selectbox("Select Y column", df.select_dtypes(include=['number']).columns.tolist())
     
     # Select optional parameters
-    hue = st.selectbox("Select Hue (categorical variable)", [None] + df.select_dtypes(include=['object', 'category']).columns.tolist())
+    hue = st.selectbox("Select Hue (categorical column)", [None] + df.select_dtypes(include=['object', 'category']).columns.tolist())
     
     # Line and marker options
     markers = st.checkbox("Show Markers", value=False)
@@ -264,7 +264,7 @@ def create_pie_chart(df):
     if not cat_columns:
         st.warning("No categorical columns available in the DataFrame.")
         return
-    category_col = st.selectbox("Select Category Variable", cat_columns)
+    category_col = st.selectbox("Select Category column", cat_columns)
     if category_col:
         # Select the category to highlight
         highlight_category = st.selectbox("Select Category to Highlight", df[category_col].unique())
@@ -280,7 +280,7 @@ def create_pie_chart(df):
         # Display the plot
         st.plotly_chart(fig)
     else:
-        st.warning("Please select a valid categorical variable.")
+        st.warning("Please select a valid categorical column.")
 
 def create_boxplot(df):
     cat_columns = df.select_dtypes(include=['object', 'category']).columns.tolist()
@@ -288,7 +288,7 @@ def create_boxplot(df):
 
     x_col = st.selectbox("Select X column", num_columns + cat_columns)
     y_col = st.selectbox("Select Y column", [None]+ num_columns + cat_columns)
-    hue = st.selectbox("Select Hue (categorical variable)", [None] + cat_columns)
+    hue = st.selectbox("Select Hue (categorical column)", [None] + cat_columns)
     title = st.text_input("Enter title for the box plot", value=f"{x_col} vs {y_col} box plot")
     
     if hue:
@@ -307,7 +307,7 @@ def create_count_plot(df):
         return
 
     x = st.selectbox("Select X column", cat_columns)
-    hue = st.selectbox("Select Hue (categorical variable)", [None] + cat_columns)
+    hue = st.selectbox("Select Hue (categorical column)", [None] + cat_columns)
     stat = st.selectbox("Select Stat", ['count', 'percent', 'proportion', 'probability'])
     add_avg_line = st.checkbox('Add Average Line', value=False)
     title = st.text_input("Enter title for the count plot", value=f"{x} count plot")
@@ -329,7 +329,7 @@ def create_count_plot(df):
         fig.update_layout(title=title)
         st.plotly_chart(fig)
     else:
-        st.warning("Please select a valid categorical variable.")
+        st.warning("Please select a valid categorical column.")
 
 def create_kde_plot(df):
     # Identify numeric and categorical columns
@@ -337,9 +337,9 @@ def create_kde_plot(df):
     cat_columns = df.select_dtypes(include=['object', 'category']).columns.tolist()
 
     # Streamlit widgets for user input
-    x = st.selectbox("Select X variable", [None] + num_columns )
-    y = st.selectbox("Select Y variable", [None] + num_columns)
-    hue = st.selectbox("Select Hue (categorical variable)", [None] + cat_columns)
+    x = st.selectbox("Select X column", [None] + num_columns )
+    y = st.selectbox("Select Y column", [None] + num_columns)
+    hue = st.selectbox("Select Hue (categorical column)", [None] + cat_columns)
     palette = st.selectbox("Select Color Palette", 
                            ['bright', 'tab10', 'deep', 'muted', 'dark', 'Paired', 'Set2', 
                             'colorblind', 'rocket', 'viridis', 'icefire', 'Spectral'])
@@ -350,7 +350,7 @@ def create_kde_plot(df):
     plot = sns.kdeplot(data=df, x=x, y=y, hue=hue,fill=fill, palette=palette, ax=ax)
     plt.xticks(rotation=90)
 
-    # Add average lines if selected and variables are numeric
+    # Add average lines if selected and columns are numeric
     if add_avg_line:
         if x in num_columns:
             avg_x = df[x].mean()
@@ -374,7 +374,7 @@ def mat_create_pairplot(df):
     cat_column = df.select_dtypes(include=['object'])
     columns = cat_column.columns.tolist()
     kind = st.selectbox("Select type of kind", ['scatter', 'kde', 'hist', 'reg'])
-    hue = st.selectbox("Select Hue (categorical variable)", [None] + columns)
+    hue = st.selectbox("Select Hue (categorical column)", [None] + columns)
     palette = st.selectbox("Select Color Palette", ['bright', 'tab10','rocket', 'viridis','icefire','Paired',"Set2"])
     sns.pairplot(df, hue=hue, palette=palette, kind=kind)
     plt.legend(bbox_to_anchor=(1.05, 0.5), loc='upper left')
@@ -544,8 +544,8 @@ def mat_create_scatter(df):
 def mat_create_histplot(df):
     # Select numerical columns
     num_columns = df.select_dtypes(include=['number']).columns.tolist()   
-    x = st.selectbox("Select Numerical Variable", num_columns)
-    hue = st.selectbox("Select Hue (categorical variable)", [None] + df.select_dtypes(include=['object', 'category']).columns.tolist())
+    x = st.selectbox("Select Numerical column", num_columns)
+    hue = st.selectbox("Select Hue (categorical column)", [None] + df.select_dtypes(include=['object', 'category']).columns.tolist())
     palette = st.selectbox("Select Color Palette", ['deep', 'muted', 'bright', 'dark', 'colorblind'])
     stat = st.selectbox("Select Stat", ['count', 'frequency', 'density', 'probability'])
     multiple = st.selectbox("Multiple", ['layer', 'dodge', 'stack', 'fill'])
@@ -570,7 +570,7 @@ def mat_create_histplot(df):
         st.pyplot(fig)
 
     else:
-        st.warning("Please select a valid numerical variable.")
+        st.warning("Please select a valid numerical column.")
 
 def mat_create_line_plot(df):
     for col in df.select_dtypes(include=['datetime']):
@@ -585,8 +585,8 @@ def mat_create_line_plot(df):
     num_columns = df.select_dtypes(include=['number']).columns.tolist()
     cat_columns = df.select_dtypes(include=['object', 'category']).columns.tolist()
     # Streamlit widgets for user input
-    x = st.selectbox("Select X variable", [None] + num_columns + cat_columns)
-    y = st.selectbox("Select Y variable", [None] + cat_columns)
+    x = st.selectbox("Select X column", [None] + num_columns + cat_columns)
+    y = st.selectbox("Select Y column", [None] + cat_columns)
     hue = st.selectbox("Select Hue (categorical)", [None] + cat_columns)
     size = st.selectbox("Select Size (numeric)", [None] + num_columns)
     style = st.selectbox("Select Style (categorical)", [None] + cat_columns)
@@ -602,7 +602,7 @@ def mat_create_line_plot(df):
     title = st.text_input("Enter title for the line plot", value=f"{x} vs {y} line Plot")
     # Validate selected inputs
     if not x or not y:
-        st.warning("Please select valid X and Y variables.")
+        st.warning("Please select valid X and Y columns.")
         return
     # Create the figure
     fig, ax = plt.subplots(figsize=(25, 15))
@@ -644,7 +644,7 @@ def mat_create_line_plot(df):
 def mat_create_pie_chart(df):
     # Select categorical column
     cat_columns = df.select_dtypes(include=['object', 'category']).columns.tolist()
-    category_col = st.selectbox("Select Category Variable", cat_columns)
+    category_col = st.selectbox("Select Category column", cat_columns)
     
     # Color palette selection
     palette = st.selectbox("Select Color Palette", 
@@ -666,7 +666,7 @@ def mat_create_pie_chart(df):
         plt.show()
         st.pyplot(fig)
     else:
-        st.warning("Please select a valid category variable.")
+        st.warning("Please select a valid category column.")
 
 def mat_create_boxplot(df):
     # Select categorical and numerical columns
@@ -675,7 +675,7 @@ def mat_create_boxplot(df):
 
     x_col = st.selectbox("Select X column", num_columns + cat_columns)
     y_col = st.selectbox("Select Y column", [None]+ num_columns + cat_columns)
-    hue = st.selectbox("Select Hue (categorical variable)", [None] + cat_columns)
+    hue = st.selectbox("Select Hue (categorical column)", [None] + cat_columns)
     palette = st.selectbox("Select Color Palette", 
                            ['bright', 'tab10', 'deep', 'muted', 'dark', 'Paired', 'Set2', 
                             'colorblind', 'rocket', 'viridis', 'icefire', 'Spectral'])
@@ -688,13 +688,13 @@ def mat_create_boxplot(df):
         plt.show()
         st.pyplot(fig)
     else:
-        st.warning("Please select valid X and Y variables.")
+        st.warning("Please select valid X and Y columns.")
 
 def mat_create_count_plot(df):
     x = st.selectbox("Select X column", df.select_dtypes(include=['object', 'category']).columns.tolist())
     cat_columns = df.select_dtypes(include=['object', 'category']).columns.tolist()
     num_columns = df.select_dtypes(include=['number']).columns.tolist()
-    hue = st.selectbox("Select Hue (categorical variable)", [None] + df.select_dtypes(include=['object', 'category']).columns.tolist())
+    hue = st.selectbox("Select Hue (categorical column)", [None] + df.select_dtypes(include=['object', 'category']).columns.tolist())
     palette = st.selectbox("Select Color Palette", ['bright', 'tab10', 'deep', 'muted', 'dark', 'Paired', 'Set2', 'colorblind', 'rocket', 'viridis', 'icefire', 'Spectral'])
     stat = st.selectbox("Select Stat", ['count', 'percent', 'proportion', 'probability'])
     add_avg_line = st.checkbox('Average Line', value=False)
@@ -715,7 +715,7 @@ def mat_create_count_plot(df):
         ax.axhline(avg_y, color='red', linestyle='--', linewidth=1, label=f'Avg Y: {avg_y:.1f}')
         ax.text(0, avg_y, f'{avg_y:.1f}', color='red', ha='right', va='center', transform=ax.get_yaxis_transform(), fontsize=10)
 
-    # Add bar labels if hue variable has less than or equal to 10 unique values
+    # Add bar labels if hue column has less than or equal to 10 unique values
     if hue is None or df[hue].nunique() <= 15:
         for container in plot.containers:
             plot.bar_label(container, label_type="edge", rotation=90,padding=3)
@@ -730,9 +730,9 @@ def mat_create_kde_plot(df):
     cat_columns = df.select_dtypes(include=['object', 'category']).columns.tolist()
 
     # Streamlit widgets for user input
-    x = st.selectbox("Select X variable", [None] + num_columns )
-    y = st.selectbox("Select Y variable", [None] + num_columns)
-    hue = st.selectbox("Select Hue (categorical variable)", [None] + cat_columns)
+    x = st.selectbox("Select X column", [None] + num_columns )
+    y = st.selectbox("Select Y column", [None] + num_columns)
+    hue = st.selectbox("Select Hue (categorical column)", [None] + cat_columns)
     palette = st.selectbox("Select Color Palette", 
                            ['bright', 'tab10', 'deep', 'muted', 'dark', 'Paired', 'Set2', 
                             'colorblind', 'rocket', 'viridis', 'icefire', 'Spectral'])
@@ -742,7 +742,7 @@ def mat_create_kde_plot(df):
     plot = sns.kdeplot(data=df, x=x, y=y, hue=hue, palette=palette, ax=ax)
     plt.xticks(rotation=90)
 
-    # Add average lines if selected and variables are numeric
+    # Add average lines if selected and columns are numeric
     if add_avg_line:
         if x in num_columns:
             avg_x = df[x].mean()
