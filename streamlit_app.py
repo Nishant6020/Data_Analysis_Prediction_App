@@ -203,34 +203,6 @@ def download_clean_data(df):
     csv = df.to_csv(index=False).encode("utf-8")
     return csv
 
-def fill_missing_values(df, column, method=None):
-    df_cleaned = df.copy()
-    
-    column_type = df_cleaned[column].dtype
-    
-    if column_type in ['int64', 'float64']:
-        if method == 'Mean':
-            df_cleaned[column] = df_cleaned[column].fillna(df_cleaned[column].mean())
-        elif method == 'Median':
-            df_cleaned[column] = df_cleaned[column].fillna(df_cleaned[column].median())
-        elif method == 'Min':
-            df_cleaned[column] = df_cleaned[column].fillna(df_cleaned[column].min())
-        elif method == 'Max':
-            df_cleaned[column] = df_cleaned[column].fillna(df_cleaned[column].max())
-        elif method == 'Zero':
-            df_cleaned[column] = df_cleaned[column].fillna(0)
-        else:
-            st.error("Invalid method for filling missing values.")
-    elif column_type in ['object', 'category']:
-        if method == 'Most Frequent':
-            df_cleaned[column] = df_cleaned[column].fillna(df_cleaned[column].mode()[0])
-        elif method == 'Other':
-            df_cleaned[column] = df_cleaned[column].fillna("Other")
-        else:
-            st.error("Invalid method for categorical columns.")
-    
-    return df_cleaned   
-
 def show_value_counts(df, column):
     st.write(f"### Value Counts for Column: {column}")
     value_counts = df[column].value_counts().reset_index()
