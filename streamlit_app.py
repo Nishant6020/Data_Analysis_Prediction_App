@@ -1465,7 +1465,7 @@ if 'df' in st.session_state:
         # new columns 
         new_column_expander = st.sidebar.expander("Add Columns", expanded=False)
         if new_column_expander:
-            new_column_option = st.sidebar.selectbox("Select a task for Add Columns", [
+            new_column_option = st.sidebar.selectbox("Add Columns", [
                 "Select Option",
                 "Conditional Columns",
                 "Opertational Columns",
