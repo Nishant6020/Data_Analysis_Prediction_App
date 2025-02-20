@@ -54,6 +54,78 @@ def load_data(file):
         st.error(f"An unexpected error occurred: {e}")
         return None
 
+def fill_missing_values(df):
+    column = st.selectbox("Select the column with missing values", df.columns)
+    
+    # Check if the selected column is numerical
+    if df[column].dtype in ['int64', 'float64']:
+        # Show statistics of the selected column (mean, median, min, max)
+        mean_value = df[column].mean()
+        median_value = df[column].median()
+        min_value = df[column].min()
+        max_value = df[column].max()
+        
+        st.write(f"Mean: {mean_value}")
+        st.write(f"Median: {median_value}")
+        st.write(f"Min: {min_value}")
+        st.write(f"Max: {max_value}")
+        
+        method = st.selectbox(
+            "Select the method to fill missing values",
+            ['Mean', 'Median', 'Min', 'Max', 'Zero', 'Custom Value', 'Up Fill', 'Down Fill']
+        )
+        
+        if method == 'Custom Value':
+            custom_value = st.number_input(f"Enter a custom value to fill missing values in {column}", value=0)
+            method = 'Custom'
+    
+    # Check if the selected column is categorical
+    elif df[column].dtype in ['object', 'category']:
+        # Show the most frequent category (mode) and its count
+        mode_value = df[column].mode()[0]
+        mode_count = df[column].value_counts()[mode_value]
+        
+        st.write(f"Most frequent in {column}: {mode_value} (Count: {mode_count})")
+        
+        method = st.selectbox(
+            "Select the method to fill missing values",
+            ['Most Frequent', 'Other', 'Custom Value', 'Up Fill', 'Down Fill']
+        )
+        
+        if method == 'Custom Value':
+            custom_value = st.text_input(f"Enter a custom value to fill missing values in {column}", value="Unknown")
+            method = 'Custom'
+    else:
+        st.write("Selected column is neither numerical nor categorical.")
+        method = None  # No filling method is available
+    
+    # Apply the filling method
+    if method is not None and st.button("Fill Missing Values"):
+        if method == 'Mean':
+            df[column] = df[column].fillna(df[column].mean())
+        elif method == 'Median':
+            df[column] = df[column].fillna(df[column].median())
+        elif method == 'Min':
+            df[column] = df[column].fillna(df[column].min())
+        elif method == 'Max':
+            df[column] = df[column].fillna(df[column].max())
+        elif method == 'Zero':
+            df[column] = df[column].fillna(0)
+        elif method == 'Most Frequent':
+            df[column] = df[column].fillna(df[column].mode()[0])
+        elif method == 'Other':
+            df[column] = df[column].fillna("Other")
+        elif method == 'Custom':
+            df[column] = df[column].fillna(custom_value)
+        elif method == 'Up Fill':
+            df[column] = df[column].fillna(method='ffill')
+        elif method == 'Down Fill':
+            df[column] = df[column].fillna(method='bfill')
+        
+        st.write("Missing values filled successfully!")
+        st.write(df[column].head())  # Show a preview of the filled column
+        st.rerun()
+
 def check_missing_values(df):
     missing = df.isnull().sum()
     missing_percentage = (missing / len(df)) * 100
@@ -642,6 +714,454 @@ def eda(df):
                 report_html = f.read()
                 components.html(report_html, height=800, scrolling=True)
 
+# column creating
+def rounding_columns(df):
+    # Select numerical columns
+    numerical_columns = df.select_dtypes(include=[np.number]).columns
+
+    if len(numerical_columns) > 0:
+        selected_column = st.selectbox("Select column to perform rounding:", numerical_columns)
+
+        rounding_option = st.selectbox("Choose rounding option:", ["Round", "Round Up", "Round Down"])
+
+        decimal_places = st.number_input("Enter number of decimal places:", min_value=0, step=1)
+
+        new_column_name = st.text_input("Enter new column name for rounding result:")
+
+        if st.button("Create Column"):
+            if rounding_option == "Round":
+                df[new_column_name] = df[selected_column].round(decimal_places)
+            elif rounding_option == "Round Up":
+                df[new_column_name] = np.ceil(df[selected_column] * (10**decimal_places)) / (10**decimal_places)
+            elif rounding_option == "Round Down":
+                df[new_column_name] = np.floor(df[selected_column] * (10**decimal_places)) / (10**decimal_places)
+            st.session_state.df = df
+            st.success(f"'{new_column_name}' Column created successfully!")
+            st.rerun()
+
+def opertational_columns(df):
+    new_column_name = st.text_input("Enter new column name for result:")
+    col1 = st.selectbox("Select first column:", df.columns)
+    
+    additional_options = ["Square Root", "Cube", "Square", "Factorial", "Percentage of", "Is Even", "Is Odd"]
+    operator = st.selectbox("Choose operator:", ["sum", "multiply", "divide", "percentage", "minus"] + additional_options)
+
+    if operator not in additional_options:
+        col2 = st.selectbox("Select second column:", df.columns)
+
+    if operator == "Percentage of":
+        value = st.number_input("Enter value to calculate percentage of:", step=1.0)
+
+    if st.button("Create Columns"):
+        if operator == "Square Root":
+            df[new_column_name] = df[col1].apply(np.sqrt)
+            st.success("Columns created successfully!")
+            st.rerun()
+        elif operator == "Cube":
+            df[new_column_name] = df[col1] ** 3
+            st.success("Columns created successfully!")
+            st.rerun()
+        elif operator == "Square":
+            df[new_column_name] = df[col1] ** 2
+            st.success("Columns created successfully!")
+            st.rerun()
+        elif operator == "Factorial":
+            df[new_column_name] = df[col1].apply(math.factorial)
+            st.success("Columns created successfully!")
+            st.rerun()
+        elif operator == "Percentage of":
+            df[new_column_name] = (df[col1] / value) * 100
+            st.success("Columns created successfully!")
+            st.rerun()
+        elif operator == "Is Even":
+            df[new_column_name] = df[col1] % 2 == 0
+            df[new_column_name] = df[new_column_name].replace({True: "Even", False: "Odd"})
+            st.success("Columns created successfully!")
+            st.rerun()
+        elif operator == "Is Odd":
+            df[new_column_name] = df[col1] % 2 != 0
+            df[new_column_name] = df[new_column_name].replace({True: "Odd", False: "Even"})
+            st.success("Columns created successfully!")
+            st.rerun()
+        else:
+            if df[col1].dtype == df[col2].dtype:
+                if df[col1].dtype in [int, float]:
+                    if operator == "sum":
+                        df[new_column_name] = df[col1] + df[col2]
+                    elif operator == "multiply":
+                        df[new_column_name] = df[col1] * df[col2]
+                    elif operator == "divide":
+                        df[new_column_name] = df[col1] / df[col2]
+                    elif operator == "percentage":
+                        df[new_column_name] = (df[col1] / df[col2]) * 100
+                    elif operator == "minus":
+                        df[new_column_name] = df[col1] - df[col2]
+                else:
+                    df[new_column_name] = df[col1].astype(str) + df[col2].astype(str)
+                st.session_state.df = df
+                st.success("Columns created successfully!")
+                st.rerun()
+            else:
+                st.error("Columns have different data types and cannot be merged")
+
+def create_conditional_column(df):
+    if 'conditions' not in st.session_state:
+        st.session_state.conditions = []
+
+    column_name = st.text_input("Enter new column name:")
+
+    # Default 'if' condition
+    if len(st.session_state.conditions) == 0:
+        unique_key = str(uuid.uuid4())
+        st.session_state.conditions.append(unique_key)
+
+    for i, unique_key in enumerate(st.session_state.conditions):
+        condition_label = "if" if i == 0 else f"elif {i}"
+        with st.expander(f"{condition_label}", expanded=True):
+            selected_column = st.selectbox("Select column:", df.columns, key=f"selected_column_{unique_key}")
+            column_dtype = df[selected_column].dtype
+
+            if column_dtype == object:
+                operator = st.selectbox("Choose operator:", ["equal", "does not equal", "begins with", "does not begin with", "ends with", "does not end with", "contains", "does not contain"], key=f"operator_{unique_key}")
+            else:
+                operator = st.selectbox("Choose operator:", ["equal", "does not equal", "is greater than", "is greater than or equal to", "is less than", "is less than or equal to", "between"], key=f"operator_{unique_key}")
+
+            value = st.text_input("Enter value:", key=f"value_{unique_key}")
+            value_2 = None
+            if column_dtype != object and operator == "between":
+                value_2 = st.text_input("Enter second value for 'between':", key=f"value_2_{unique_key}")
+            output_value = st.text_input("Output value if condition is met:", key=f"output_{unique_key}")
+            if i != 0 and st.button("Remove Condition", key=f"remove_{unique_key}"):
+                st.session_state.conditions.remove(unique_key)
+                st.rerun()
+
+    if st.button("Add Condition"):
+        unique_key = str(uuid.uuid4())
+        st.session_state.conditions.append(unique_key)
+
+    else_output_value = st.text_input("Else value if none of the conditions are met:", key="else_output")
+
+    if st.button("Create column"):
+        conditions = [(st.session_state[f"selected_column_{key}"], st.session_state[f"operator_{key}"], st.session_state[f"value_{key}"], st.session_state[f"value_2_{key}"] if st.session_state[f"operator_{key}"] == "between" else None, st.session_state[f"output_{key}"]) for key in st.session_state.conditions]
+
+        new_column = []
+        for index, row in df.iterrows():
+            result = None
+            for condition in conditions:
+                column, operator, value, value_2, output = condition
+                # Convert value to appropriate type for comparison
+                if df[column].dtype != object:
+                    value = float(value)
+                    if value_2 is not None:
+                        value_2 = float(value_2)
+
+                if operator == "equal" and row[column] == value:
+                    result = output
+                    break
+                elif operator == "does not equal" and row[column] != value:
+                    result = output
+                    break
+                elif operator == "begins with" and row[column].startswith(value):
+                    result = output
+                    break
+                elif operator == "does not begin with" and not row[column].startswith(value):
+                    result = output
+                    break
+                elif operator == "ends with" and row[column].endswith(value):
+                    result = output
+                    break
+                elif operator == "does not end with" and not row[column].endswith(value):
+                    result = output
+                    break
+                elif operator == "contains" and value in row[column]:
+                    result = output
+                    break
+                elif operator == "does not contain" and value not in row[column]:
+                    result = output
+                    break
+                elif operator == "is greater than" and row[column] > value:
+                    result = output
+                    break
+                elif operator == "is greater than or equal to" and row[column] >= value:
+                    result = output
+                    break
+                elif operator == "is less than" and row[column] < value:
+                    result = output
+                    break
+                elif operator == "is less than or equal to" and row[column] <= value:
+                    result = output
+                    break
+                elif operator == "between" and value <= row[column] <= value_2:
+                    result = output
+                    break
+
+            if result is None:
+                result = st.session_state["else_output"]
+            new_column.append(result)
+
+        df[column_name] = new_column
+        st.session_state.df = df
+        st.success("New column created successfully!")
+        st.rerun()
+
+def merge_columns(df):
+    # Select multiple columns to merge
+    selected_columns = st.multiselect("Select columns to merge:", df.columns)
+    
+    if len(selected_columns) > 0:
+        # Option to give column name
+        new_column_name = st.text_input("Enter new column name:")
+
+        # Default separator is space
+        separator_options = {
+            "Colon": ":",
+            "Comma": ",",
+            "Space": " ",
+            "Equal to": "=",
+            "Semicolon": ";",
+            "Tab": "\t",
+            "Custom": None
+        }
+
+        separator = st.selectbox("Choose separator:", list(separator_options.keys()), index=2)
+        if separator == "Custom":
+            chosen_separator = st.text_input("Enter custom separator:")
+        else:
+            chosen_separator = separator_options[separator]
+
+        if st.button("Merge columns"):
+            if separator == "Custom":
+                chosen_separator = chosen_separator
+            # Create the new merged column
+            df[new_column_name] = df[selected_columns].astype(str).agg(chosen_separator.join, axis=1)
+            st.session_state.df = df
+            st.success(f"Columns merged successfully into '{new_column_name}'")
+            st.rerun()
+
+def parse_date(date_str):
+    for fmt in ("%d-%m-%Y", "%d.%m.%Y", "%d/%m/%Y", "%m-%d-%Y", "%m.%d.%Y", "%m/%d/%Y"):
+        try:
+            return pd.to_datetime(date_str, format=fmt)
+        except ValueError:
+            continue
+    return pd.NaT
+
+
+def parse_time(time_str):
+    for fmt in ("%H:%M:%S", "%H:%M", "%I:%M %p", "%I %p"):
+        try:
+            return pd.to_datetime(time_str, format=fmt).time()
+        except ValueError:
+            continue
+    return 
+
+
+def extract_columns(df):
+    column_name = st.selectbox("Select column for extraction:", df.columns)
+    operation = st.selectbox("Choose extraction operation:", [
+        "Length", "First Character", "Last Character", "Range", "Text Before Delimiter", 
+        "Text After Delimiter", "Text Between Delimiters","Extract Date","Extract Time"])
+
+    if operation == "Length":
+        new_column_name = column_name + "_" + "Length"
+        if st.button("Create Column"):
+            df[new_column_name] = df[column_name].astype(str).str.len()
+            st.session_state.df = df
+            st.success("Column extracted successfully!")
+            st.rerun()
+
+    elif operation == "First Character":
+        count = st.number_input("Enter number of starting characters to keep:", min_value=1, step=1)
+        new_column_name = st.text_input("Enter new column name for result:")
+        if st.button("Create Column"):
+            df[new_column_name] = df[column_name].astype(str).str[:count]
+            st.session_state.df = df
+            st.success("Column extracted successfully!")
+            st.rerun()
+
+    elif operation == "Last Character":
+        count = st.number_input("Enter number of ending characters to keep:", min_value=1, step=1)
+        new_column_name = st.text_input("Enter new column name for result:")
+        if st.button("Create Column"):
+            df[new_column_name] = df[column_name].astype(str).str[-count:]
+            st.session_state.df = df
+            st.success("Column extracted successfully!")
+            st.rerun()
+
+    elif operation == "Range":
+        start_index = st.number_input("Enter starting index:", min_value=0, step=1)
+        num_chars = st.number_input("Enter number of characters to keep:", min_value=1, step=1)
+        new_column_name = st.text_input("Enter new column name for result:")
+        if st.button("Create Column"):
+            df[new_column_name] = df[column_name].astype(str).str[start_index:start_index+num_chars]
+            st.session_state.df = df
+            st.success("Column extracted successfully!")
+            st.rerun()
+
+    elif operation == "Text Before Delimiter":
+        delimiter_option = st.selectbox("Choose delimiter:", ["Space", "Comma", "Dot", "Custom Delimiter"])
+        if delimiter_option == "Custom Delimiter":
+            delimiter = st.text_input("Enter custom delimiter:")
+        else:
+            delimiter = {'Space': ' ', 'Comma': ',', 'Dot': '.'}[delimiter_option]
+        skip_count = st.number_input("Enter number of delimiters to skip:", min_value=0, step=1)
+        new_column_name = st.text_input("Enter new column name for result:")
+        if st.button("Create Column"):
+            df[new_column_name] = df[column_name].astype(str).str.split(delimiter).str[:skip_count].str.join(delimiter)
+            st.session_state.df = df
+            st.success("Column extracted successfully!")
+            st.rerun()
+
+    elif operation == "Text After Delimiter":
+        delimiter_option = st.selectbox("Choose delimiter:", ["Space", "Comma", "Dot", "Custom Delimiter"])
+        if delimiter_option == "Custom Delimiter":
+            delimiter = st.text_input("Enter custom delimiter:")
+        else:
+            delimiter = {'Space': ' ', 'Comma': ',', 'Dot': '.'}[delimiter_option]
+        skip_count = st.number_input("Enter number of delimiters to skip:", min_value=0, step=1)
+        new_column_name = st.text_input("Enter new column name for result:")
+        if st.button("Create Column"):
+            df[new_column_name] = df[column_name].astype(str).str.split(delimiter).str[skip_count + 1:].str.join(delimiter)
+            st.session_state.df = df
+            st.success("Column extracted successfully!")
+            st.rerun()
+
+    elif operation == "Text Between Delimiters":
+        start_delimiter_option = st.selectbox("Choose start delimiter:", ["Space", "Comma", "Period", "Custom Delimiter"])
+        if start_delimiter_option == "Custom Delimiter":
+            start_delimiter = st.text_input("Enter custom start delimiter:")
+        else:
+            start_delimiter = {'Space': ' ', 'Comma': ',', 'Period': '.'}[start_delimiter_option]
+
+        end_delimiter_option = st.selectbox("Choose end delimiter:", ["Space", "Comma", "Period", "Custom Delimiter"])
+        if end_delimiter_option == "Custom Delimiter":
+            end_delimiter = st.text_input("Enter custom end delimiter:")
+        else:
+            end_delimiter = {'Space': ' ', 'Comma': ',', 'Period': '.'}[end_delimiter_option]
+
+        new_column_name = st.text_input("Enter new column name for result:")
+        if st.button("Create Column"):
+            df[new_column_name] = df[column_name].astype(str).str.extract(f"{start_delimiter}(.*?){end_delimiter}")
+            st.session_state.df = df
+            st.success("Column extracted successfully!")
+            st.rerun()
+
+    elif operation == "Extract Date":
+        date_part = st.selectbox("Select date part to extract:", ["Day", "Month", "Year", "Complete Date"])
+        new_column_name = st.text_input("Enter new column name for result:")
+        if st.button("Create Column"):
+            parsed_dates = df[column_name].astype(str).apply(parse_date)
+            if date_part == "Day":
+                df[new_column_name] = parsed_dates.dt.day
+            elif date_part == "Month":
+                df[new_column_name] = parsed_dates.dt.month
+            elif date_part == "Year":
+                df[new_column_name] = parsed_dates.dt.year
+            elif date_part == "Complete Date":
+                df[new_column_name] = parsed_dates.dt.strftime('%d-%m-%Y')
+            st.session_state.df = df
+            st.success("Column extracted successfully!")
+            st.rerun()
+
+    elif operation == "Extract Time":
+        time_part = st.selectbox("Select time part to extract:", ["Hours", "Minutes", "Seconds", "Complete Time"])
+        new_column_name = st.text_input("Enter new column name for result:")
+        if st.button("Create Column"):
+            parsed_times = df[column_name].astype(str).apply(parse_time)
+            if time_part == "Hours":
+                df[new_column_name] = parsed_times.apply(lambda x: x.hour if x else None)
+            elif time_part == "Minutes":
+                df[new_column_name] = parsed_times.apply(lambda x: x.minute if x else None)
+            elif time_part == "Seconds":
+                df[new_column_name] = parsed_times.apply(lambda x: x.second if x else None)
+            elif time_part == "Complete Time":
+                df[new_column_name] = parsed_times.apply(lambda x: x.strftime('%H:%M:%S') if x else None)
+            st.session_state.df = df
+            st.success("Column extracted successfully!")
+            st.rerun()
+
+
+def clean_non_printable(text):
+    return ''.join(filter(lambda x: x in string.printable, text))
+
+def remove_symbols(text, symbols):
+    return text.translate(str.maketrans('', '', symbols))
+
+def text_format(df):
+    column_name = st.selectbox("Select column to format:", df.columns)
+    operation = st.selectbox("Choose formatting operation:", [
+        "Lowercase", "Uppercase", "Capitalized Each Word", "Trim", 
+        "Clean", "Remove Symbols","Add Prefix", "Add Suffix"])
+
+    if operation == "Lowercase":
+        new_column_name = st.text_input("Enter new column name for result:")
+        if st.button("Format Column"):
+            df[new_column_name] = df[column_name].str.lower()
+            st.session_state.df = df
+            st.success("Column formatted successfully!")
+            st.rerun()
+
+    elif operation == "Uppercase":
+        new_column_name = st.text_input("Enter new column name for result:")
+        if st.button("Format Column"):
+            df[new_column_name] = df[column_name].str.upper()
+            st.session_state.df = df
+            st.success("Column formatted successfully!")
+            st.rerun()
+
+    elif operation == "Capitalized Each Word":
+        new_column_name = st.text_input("Enter new column name for result:")
+        if st.button("Format Column"):
+            df[new_column_name] = df[column_name].str.title()
+            st.session_state.df = df
+            st.success("Column formatted successfully!")
+            st.rerun()
+
+    elif operation == "Trim":
+        new_column_name = st.text_input("Enter new column name for result:")
+        if st.button("Format Column"):
+            df[new_column_name] = df[column_name].str.replace(' ', '')
+            st.session_state.df = df
+            st.success("Column formatted successfully!")
+            st.rerun()
+
+    elif operation == "Clean":
+        new_column_name = st.text_input("Enter new column name for result:")
+        if st.button("Format Column"):
+            df[new_column_name] = df[column_name].apply(clean_non_printable)
+            st.session_state.df = df
+            st.success("Column formatted successfully!")
+            st.rerun()
+
+    elif operation == "Add Prefix":
+        prefix = st.text_input("Enter prefix to add:")
+        new_column_name = st.text_input("Enter new column name for result:")
+        if st.button("Format Column"):
+            df[new_column_name] = prefix + df[column_name].astype(str)
+            st.session_state.df = df
+            st.success("Column formatted successfully!")
+            st.rerun()
+
+    elif operation == "Add Suffix":
+        suffix = st.text_input("Enter suffix to add:")
+        new_column_name = st.text_input("Enter new column name for result:")
+        if st.button("Format Column"):
+            df[new_column_name] = df[column_name].astype(str) + suffix
+            st.session_state.df = df
+            st.success("Column formatted successfully!")
+            st.rerun()
+
+    elif operation == "Remove Symbols":
+        symbols = st.text_input("Enter symbols to remove:")
+        new_column_name = st.text_input("Enter new column name for result:")
+        if st.button("Format Column"):
+            df[new_column_name] = df[column_name].apply(lambda x: remove_symbols(str(x), symbols))
+            st.session_state.df = df
+            st.success("Column formatted successfully!")
+            st.rerun()
+
+
+
 
 
 # steamlit app
@@ -677,6 +1197,9 @@ import pygwalker as pyg
 from home import home
 from contact import contact
 from data_visualization import *
+import uuid
+import string
+
 
 # Streamlit App
 st.set_page_config(page_title="Data Analysis & Model Building App",layout="wide")
@@ -826,6 +1349,7 @@ if 'df' in st.session_state:
                 "Fill Missing Values",
                 "Drop Columns",
                 "Replace Values",
+                "Rounding",
                 "Clean Categorical Text",
                 "Encode Categorical Columns",
             ])  
@@ -850,6 +1374,7 @@ if 'df' in st.session_state:
 
                         st.success(f"Data type for column '{column}' changed to {new_type}!")
                         st.write(st.session_state.df.dtypes)
+                        st.rerun()
                     except Exception as e:
                         st.error(f"Error changing data type: {e}")
 
@@ -898,6 +1423,7 @@ if 'df' in st.session_state:
                         st.session_state.df[column] = st.session_state.df[column].replace(dict.fromkeys(values_to_replace, new_value))
                         st.success("Values replaced successfully!")
                         st.write(st.session_state.df[column].head())
+                        st.rerun()
                     else:
                         st.warning(f"The values {values_to_replace} do not exist in the selected column.")
 
@@ -908,6 +1434,7 @@ if 'df' in st.session_state:
                     st.session_state.df = drop_columns(st.session_state.df, columns)
                     st.success("Selected columns dropped!")
                     st.write(st.session_state.df.head())
+                    st.rerun()
 
 
             elif cleaning_option == "Clean Categorical Text":
@@ -917,6 +1444,7 @@ if 'df' in st.session_state:
                     st.session_state.df = clean_categorical_text(st.session_state.df, columns)
                     st.success("Text cleaned for selected columns!")
                     st.write(st.session_state.df.head())
+                    st.rerun()
 
             elif cleaning_option == "Encode Categorical Columns":
                 categorical_columns = st.session_state.df.select_dtypes(exclude=['number']).columns.tolist()
@@ -925,76 +1453,39 @@ if 'df' in st.session_state:
                     st.session_state.df = encode_categorical(st.session_state.df, columns)
                     st.success("Selected columns encoded!")
                     st.write(unique_columns(st.session_state.df))
+                    st.rerun()
             
             elif cleaning_option == "Fill Missing Values":
-                column = st.selectbox("Select the column with missing values", st.session_state.df.columns)
-                
-                # Check if the selected column is numerical
-                if st.session_state.df[column].dtype in ['int64', 'float64']:
-                    # Show statistics of the selected column (mean, median, min, max)
-                    mean_value = st.session_state.df[column].mean()
-                    median_value = st.session_state.df[column].median()
-                    min_value = st.session_state.df[column].min()
-                    max_value = st.session_state.df[column].max()
-                    
-                    st.write(f"Mean: {mean_value}")
-                    st.write(f"Median: {median_value}")
-                    st.write(f"Min: {min_value}")
-                    st.write(f"Max: {max_value}")
-                    
-                    method = st.selectbox(
-                        "Select the method to fill missing values",
-                        ['Mean', 'Median', 'Min', 'Max', 'Zero', 'Custom Value']
-                    )
-                    
-                    if method == 'Custom Value':
-                        custom_value = st.number_input(f"Enter a custom value to fill missing values in {column}", value=0)
-                        method = 'Custom'
-                
-                # Check if the selected column is categorical
-                elif st.session_state.df[column].dtype in ['object', 'category']:
-                    # Show the most frequent category (mode) and its count
-                    mode_value = st.session_state.df[column].mode()[0]
-                    mode_count = st.session_state.df[column].value_counts()[mode_value]
-                    
-                    st.write(f"Most frequent in {column}: {mode_value} (Count: {mode_count})")
-                    
-                    method = st.selectbox(
-                        "Select the method to fill missing values",
-                        ['Most Frequent', 'Other', 'Custom Value']
-                    )
-                    
-                    if method == 'Custom Value':
-                        custom_value = st.text_input(f"Enter a custom value to fill missing values in {column}", value="Unknown")
-                        method = 'Custom'
-                else:
-                    st.write("Selected column is neither numerical nor categorical.")
-                    method = None  # No filling method is available
-                
-                # Apply the filling method
-                if method is not None and st.button("Fill Missing Values"):
-                    if method == 'Mean':
-                        st.session_state.df[column] = st.session_state.df[column].fillna(st.session_state.df[column].mean())
-                    elif method == 'Median':
-                        st.session_state.df[column] = st.session_state.df[column].fillna(st.session_state.df[column].median())
-                    elif method == 'Min':
-                        st.session_state.df[column] = st.session_state.df[column].fillna(st.session_state.df[column].min())
-                    elif method == 'Max':
-                        st.session_state.df[column] = st.session_state.df[column].fillna(st.session_state.df[column].max())
-                    elif method == 'Zero':
-                        st.session_state.df[column] = st.session_state.df[column].fillna(0)
-                    elif method == 'Most Frequent':
-                        st.session_state.df[column] = st.session_state.df[column].fillna(st.session_state.df[column].mode()[0])
-                    elif method == 'Other':
-                        st.session_state.df[column] = st.session_state.df[column].fillna("Other")
-                    elif method == 'Custom':
-                        st.session_state.df[column] = st.session_state.df[column].fillna(custom_value)
-                    
-                    st.write("Missing values filled successfully!")
-                    st.write(st.session_state.df[column].head())  # Show a preview of the filled column
-                    
-                    # Refresh the page to reflect the changes
-                    st.rerun()
+                fill_missing_values(st.session_state.df)
+
+            elif cleaning_option == "Rounding":
+                rounding_columns(st.session_state.df)
+
+
+        # new columns 
+        new_column_expander = st.sidebar.expander("Add Columns", expanded=False)
+        if new_column_expander:
+            new_column_option = st.sidebar.selectbox("Select a task for Add Columns", [
+                "Select Option",
+                "Conditional Columns",
+                "Opertational Columns",
+                "Merge Columns",
+                "Extract from Columns",
+                "Text Formating",
+            ])
+            
+            if new_column_option == "Conditional Columns":
+                create_conditional_column(st.session_state.df)
+            elif new_column_option == "Opertational Columns":
+                opertational_columns(st.session_state.df)    
+            elif new_column_option == "Merge Columns":
+                merge_columns(st.session_state.df)
+            elif new_column_option == "Extract from Columns":
+                extract_columns(st.session_state.df)
+            elif new_column_option == "Text Formating":
+                text_format(st.session_state.df)
+
+    
 
         # model building
         Model_Building_expander = st.sidebar.expander("Model Building", expanded=False)
