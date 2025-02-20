@@ -939,7 +939,7 @@ def merge_columns(df):
             st.rerun()
 
 def parse_date(date_str):
-    for fmt in ("%d-%m-%Y", "%d.%m.%Y", "%d/%m/%Y", "%m-%d-%Y", "%m.%d.%Y", "%m/%d/%Y"):
+    for fmt in ("%d-%m-%Y", "%d.%m.%Y", "%d/%m/%Y", "%m-%d-%Y", "%m.%d.%Y", "%m/%d/%Y", "%d-%m-%y", "%d.%m.%y", "%d/%m/%y", "%m-%d-%y", "%m.%d.%y", "%m/%d/%y"):
         try:
             return pd.to_datetime(date_str, format=fmt)
         except ValueError:
