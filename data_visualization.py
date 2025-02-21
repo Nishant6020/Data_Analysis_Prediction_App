@@ -196,9 +196,20 @@ def create_histogram(df):
     return fig
 
 def create_line_plot(df):
-    # Select X and Y columns
-    x = st.selectbox("Select X column", df.select_dtypes(include=['number']).columns.tolist())
-    y = st.selectbox("Select Y column", df.select_dtypes(include=['number']).columns.tolist())
+    for col in df.select_dtypes(include=['datetime']):
+        if df[col].dt.year.nunique() > 1:
+            df[col] = df[col].dt.year
+        elif df[col].dt.month.nunique() > 1:
+            df[col] = df[col].dt.month
+        elif df[col].dt.day.nunique() > 1:
+            df[col] = df[col].dt.day
+    
+    # Identify numeric and categorical columns
+    num_columns = df.select_dtypes(include=['number']).columns.tolist()
+    cat_columns = df.select_dtypes(include=['object', 'category']).columns.tolist()
+    # Streamlit widgets for user input
+    x = st.selectbox("Select X column", [None] + num_columns + cat_columns)
+    y = st.selectbox("Select Y column", [None] + num_columns + cat_columns)
     
     # Select optional parameters
     hue = st.selectbox("Select Hue (categorical column)", [None] + df.select_dtypes(include=['object', 'category']).columns.tolist())
