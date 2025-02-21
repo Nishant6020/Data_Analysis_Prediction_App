@@ -196,24 +196,17 @@ def create_histogram(df):
     return fig
 
 def create_line_plot(df):
-    for col in df.select_dtypes(include=['datetime']):
-        if df[col].dt.year.nunique() > 1:
-            df[col] = df[col].dt.year
-        elif df[col].dt.month.nunique() > 1:
-            df[col] = df[col].dt.month
-        elif df[col].dt.day.nunique() > 1:
-            df[col] = df[col].dt.day
-    
-    # Identify numeric and categorical columns
+    # Identify datetime, numeric, and categorical columns
+    datetime_columns = df.select_dtypes(include=['datetime']).columns.tolist()
     num_columns = df.select_dtypes(include=['number']).columns.tolist()
     cat_columns = df.select_dtypes(include=['object', 'category']).columns.tolist()
+
     # Streamlit widgets for user input
-    x = st.selectbox("Select X column", [None] + num_columns + cat_columns)
-    y = st.selectbox("Select Y column", [None] + num_columns + cat_columns)
+    x = st.selectbox("Select X column", [None] + datetime_columns + num_columns + cat_columns)
+    y = st.selectbox("Select Y column", [None] + num_columns)
     
     # Select optional parameters
-    hue = st.selectbox("Select Hue (categorical column)", [None] + df.select_dtypes(include=['object', 'category']).columns.tolist())
-    
+    hue = st.selectbox("Select Hue (categorical column)", [None] + cat_columns)    
     # Line and marker options
     markers = st.checkbox("Show Markers", value=False)
     
