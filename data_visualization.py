@@ -586,7 +586,7 @@ def mat_create_line_plot(df):
     cat_columns = df.select_dtypes(include=['object', 'category']).columns.tolist()
     # Streamlit widgets for user input
     x = st.selectbox("Select X column", [None] + num_columns + cat_columns)
-    y = st.selectbox("Select Y column", [None] + cat_columns)
+    y = st.selectbox("Select Y column", [None] + num_columns + cat_columns)
     hue = st.selectbox("Select Hue (categorical)", [None] + cat_columns)
     size = st.selectbox("Select Size (numeric)", [None] + num_columns)
     style = st.selectbox("Select Style (categorical)", [None] + cat_columns)
