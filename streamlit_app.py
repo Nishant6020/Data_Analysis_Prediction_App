@@ -911,7 +911,7 @@ def merge_columns(df):
             st.rerun()
 
 def parse_date(date_str):
-        formats = [
+    formats = [
         "%Y-%m-%d", "%y-%m-%d", "%Y-%d-%m", "%d-%m-%Y", "%d.%m.%Y", "%d/%m/%Y", 
         "%m-%d-%Y", "%m.%d.%Y", "%m/%d/%Y", "%d-%m-%y", "%d.%m.%y", "%d/%m/%y", 
         "%m-%d-%y", "%m.%d.%y", "%m/%d/%y", "%Y.%m.%d", "%Y/%m/%d", "%y.%m.%d", 
