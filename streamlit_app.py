@@ -181,23 +181,6 @@ def show_column_data(df, column_type):
     else:
         return pd.DataFrame()
 
-def clean_categorical_text(df, columns):
-    def clean_text(text):
-        text = text.lower()
-        text = re.sub(r'[^a-zA-Z0-9\s]', '', text)
-        text = re.sub(r'\s+', ' ', text).strip()
-        return text
-
-    for col in columns:
-        df[col] = df[col].astype(str).apply(clean_text)
-    return df
-
-def encode_categorical(df, columns):
-    encoder = LabelEncoder()
-    for col in columns:
-        df[col] = encoder.fit_transform(df[col])
-    return unique_columns(df)
-
 def download_clean_data(df):
     # Convert DataFrame to CSV in memory
     csv = df.to_csv(index=False).encode("utf-8")
@@ -1332,8 +1315,6 @@ if 'df' in st.session_state:
                 "Drop Columns",
                 "Replace Values",
                 "Rounding",
-                "Clean Categorical Text",
-                "Encode Categorical Columns",
             ])  
             
             # Handle Data Cleaning tasks
@@ -1416,25 +1397,6 @@ if 'df' in st.session_state:
                     st.session_state.df = drop_columns(st.session_state.df, columns)
                     st.success("Selected columns dropped!")
                     st.write(st.session_state.df.head())
-                    st.rerun()
-
-
-            elif cleaning_option == "Clean Categorical Text":
-                categorical_columns = st.session_state.df.select_dtypes(exclude=['number']).columns.tolist()
-                columns = st.multiselect("Select categorical columns to clean:", categorical_columns)
-                if st.button("Clean Text"):
-                    st.session_state.df = clean_categorical_text(st.session_state.df, columns)
-                    st.success("Text cleaned for selected columns!")
-                    st.write(st.session_state.df.head())
-                    st.rerun()
-
-            elif cleaning_option == "Encode Categorical Columns":
-                categorical_columns = st.session_state.df.select_dtypes(exclude=['number']).columns.tolist()
-                columns = st.multiselect("Select categorical columns to encode:", categorical_columns)
-                if st.button("Encode Columns"):
-                    st.session_state.df = encode_categorical(st.session_state.df, columns)
-                    st.success("Selected columns encoded!")
-                    st.write(unique_columns(st.session_state.df))
                     st.rerun()
             
             elif cleaning_option == "Fill Missing Values":
