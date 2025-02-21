@@ -1184,7 +1184,7 @@ import string
 
 
 # Streamlit App
-st.set_page_config(page_title="Data Analysis & Model Building App",layout="wide")
+st.set_page_config(page_title="Data Analysis & Model Building App",layout="wide",page_icon="data.png")
 st.sidebar.image("data.png")
 
 uploaded_file = st.sidebar.file_uploader("Upload your data file (CSV, Excel, JSON)", type=['csv', 'xlsx', 'xls', 'json'])
