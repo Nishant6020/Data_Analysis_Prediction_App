@@ -1225,9 +1225,9 @@ if external_link and st.sidebar.button("Fetch Data"):
         st.session_state.df = df
 
 if 'df' in st.session_state:
+        filter_dataframe(st.session_state.df)
         st.sidebar.markdown("________________________")  
         st.sidebar.title("Menu")
-        filter_dataframe(st.session_state.df)
         # Data prerview Section (Initially hidden)
         data_prerview_expander = st.sidebar.expander("Data Preview", expanded=False)
         if data_prerview_expander:
