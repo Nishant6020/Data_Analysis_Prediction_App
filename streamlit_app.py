@@ -1161,10 +1161,7 @@ def filter_dataframe(df):
                     for value in unique_values:
                         selected = st.checkbox(f"{value}", True, key=f"{column}_{value}")
                         if not selected:
-                            df_filtered = df_filtered[df_filtered[column] != value]
-        
-        st.markdown("---------------------------------------")
-    
+                            df_filtered = df_filtered[df_filtered[column] != value]            
     return df_filtered
 
 
@@ -1226,8 +1223,6 @@ if external_link and st.sidebar.button("Fetch Data"):
     df = fetch_data_from_url(external_link)
     if df is not None:
         st.session_state.df = df
-
-
 
 if 'df' in st.session_state:
         st.sidebar.markdown("________________________")  
