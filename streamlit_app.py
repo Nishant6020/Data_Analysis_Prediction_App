@@ -1167,8 +1167,8 @@ import string
 
 
 # Streamlit App
-st.set_page_config(page_title="Data Analysis & Model Building App",layout="wide",page_icon="data.png")
-st.sidebar.image("data.png")
+st.set_page_config(page_title="Data Analysis & Model Building App",layout="wide",page_icon="logo1.png")
+st.sidebar.image("data1.png")
 
 uploaded_file = st.sidebar.file_uploader("Upload your data file (CSV, Excel, JSON)", type=['csv', 'xlsx', 'xls', 'json'])
 if uploaded_file:
@@ -1535,8 +1535,8 @@ if 'df' in st.session_state:
         if graph_option:
             visual_expander = st.sidebar.expander("Visualization", expanded=False)       
             Visual_option = st.sidebar.selectbox("Plotly Visualization", [
-                "Select Option","Pair Plot", "Bar Plot", "Correlation Heatmap", "Scatter Plot", "Histogram","Line Chart",
-                "Pie Chart","Box Plot","Count Plot","KDE Plot","Skewness & Kurtosis",
+                "Select Option","Bar Plot", "Correlation Heatmap", "Scatter Plot", "Histogram","Line Chart", "Area Chart",
+                "Pie Chart","Box Plot","Treemap","Count Plot","Pair Plot","KDE Plot","Tabel",
             ])
             if Visual_option == "Pair Plot":
                 st.header("Pair Plot")
@@ -1557,10 +1557,13 @@ if 'df' in st.session_state:
             elif Visual_option == "Histogram":
                 st.header("Histogram")
                 st.write(create_histogram(st.session_state.df))
-
             elif Visual_option == "Line Chart":
                 st.header("Line Chart")
-                create_line_plot(st.session_state.df)
+                line_plot(st.session_state.df)
+
+            elif Visual_option == "Area Chart":
+                st.header("Area Chart")
+                area_chart(st.session_state.df)
 
             elif Visual_option == "Pie Chart":
                 st.header("Pie Chart")
@@ -1574,13 +1577,21 @@ if 'df' in st.session_state:
                 st.header("Count Plot")
                 create_count_plot(st.session_state.df)
 
+            elif Visual_option == "Treemap":
+                st.header("Treemap")
+                treemap(st.session_state.df)
+
+            elif Visual_option == "Tabel":
+                st.header("Tabel")
+                table(st.session_state.df)
+
             elif Visual_option == "KDE Plot":
                 st.header("KDE Plot")
                 create_kde_plot(st.session_state.df)
         else:
             Visual_option = st.sidebar.selectbox("Seaborn Visualization", [
                     "Select Option","Pair Plot", "Bar Plot", "Correlation Heatmap", "Scatter Plot", "Histogram","Line Chart",
-                    "Pie Chart","Box Plot", "Count Plot", "Distribution Plot", 
+                    "Pie Chart","Box Plot", "Count Plot", "KDE Plot", 
                 ])
             if Visual_option == "Pair Plot":
                 st.header("Pair Plot")
@@ -1619,9 +1630,9 @@ if 'df' in st.session_state:
                 st.header("Count Plot")
                 st.write(mat_create_count_plot(st.session_state.df))
 
-            elif Visual_option == "Distribution Plot":
-                st.header("Distribution Plot")
-                st.write(mat_create_kde_plot(st.session_state.df))
+            elif Visual_option == "KDE Plot":
+                st.header("KDE Plot")
+                st.write(create_kde_plot(st.session_state.df))
 
         # visualization
         Visual = st.sidebar.toggle("Advance Visualization")
