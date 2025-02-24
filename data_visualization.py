@@ -1,3 +1,12 @@
+import streamlit as st
+import pandas as pd
+import numpy as np
+import seaborn as sns
+import matplotlib.pyplot as plt
+import plotly.express as px
+import plotly.graph_objects as go
+
+
 def create_pairplot(df):
     col1,col2 = st.columns(2)
     with col1:
@@ -18,11 +27,10 @@ def create_bar_plot(df):
     if df.empty:
         st.write("The DataFrame is empty. Please provide data to plot.")
         return None
-
-    col1, col2, col3, col4, col5 = st.columns(5)
     num_columns = df.select_dtypes(include=['number']).columns.tolist()
     cat_columns = df.select_dtypes(include=['object', 'category']).columns.tolist()
     
+    col1, col2, col3, col4, col5 = st.columns(5)
     with col1:
         x_column = st.selectbox('X-axis', df.columns)
     with col2:
