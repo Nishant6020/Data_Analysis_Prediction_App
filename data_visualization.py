@@ -1,17 +1,9 @@
-import streamlit as st
-import pandas as pd
-import numpy as np
-import seaborn as sns
-import matplotlib.pyplot as plt
-import plotly.express as px
-import plotly.graph_objects as go
-
-# visualization function
-
 def create_pairplot(df):
-    kind = st.selectbox("Select type of kind", ['scatter', 'hist', 'reg'])
-    hue = st.selectbox("Select Hue (categorical column)", [None] + df.select_dtypes(include=['object', 'category']).columns.tolist())
-    palette = st.selectbox("Select Color Palette", ['bright', 'tab10', 'deep', 'muted', 'dark', 'Paired', 'Set2', 'colorblind', 'rocket', 'viridis', 'icefire', 'Spectral'])
+    col1,col2 = st.columns(2)
+    with col1:
+        kind = st.selectbox("Select type of kind", ['scatter', 'hist', 'reg'])
+    with col2:
+        hue = st.selectbox("Select Hue (categorical variable)", [None] + df.select_dtypes(include=['object', 'category']).columns.tolist())
     
     if kind == 'scatter':
         fig = px.scatter_matrix(df, color=hue, color_discrete_sequence=px.colors.qualitative.Plotly)
@@ -26,57 +18,68 @@ def create_bar_plot(df):
     if df.empty:
         st.write("The DataFrame is empty. Please provide data to plot.")
         return None
+
+    col1, col2, col3, col4, col5 = st.columns(5)
     num_columns = df.select_dtypes(include=['number']).columns.tolist()
     cat_columns = df.select_dtypes(include=['object', 'category']).columns.tolist()
-    x_column = st.selectbox('Select X column', df.columns)
-    y_column = st.selectbox('Select Y column', df.columns)
-    hue = st.selectbox('Select Hue', [None] + cat_columns)
-    add_avg_line = st.checkbox('Add Average Line', value=False)
+    
+    with col1:
+        x_column = st.selectbox('X-axis', df.columns)
+    with col2:
+        y_column = st.selectbox('Y-axis', df.columns)
+    with col3:
+        hue = st.selectbox('Legends', [None] + cat_columns)
+    with col4:
+        agg_func = st.selectbox("Aggregation Function", ["sum", "mean", "count", "nunique", "std", "var", "median", "min", "max"], index=0)
+    with col5:
+        add_avg_line = st.checkbox('Average Line', value=False)
 
-    title = st.text_input("Enter title for the Bar Plot", value=f"{x_column} vs {y_column} Bar Plot") 
+    title = st.text_input("Enter title for the Bar Plot", value=f"{x_column} vs {y_column} Bar Plot")
+
+    # Perform aggregation
+    try:
+        df_agg = df.groupby([x_column] + ([hue] if hue else []))[y_column].agg(agg_func).reset_index()
+    except Exception as e:
+        st.error(f"Error in aggregation: {e}")
+        return
+
     # Create the bar plot
     if hue:
-        fig = px.bar(df, x=x_column, y=y_column, color=hue,)
+        fig = px.bar(df_agg, x=x_column, y=y_column, color=hue)
     else:
-        fig = px.bar(df, x=x_column, y=y_column)
-    # Add average line if checked
-    if add_avg_line and y_column in num_columns:
-        avg_y = df[y_column].mean()
-        fig.add_hline(y=avg_y, line_dash="dash", line_color="red", annotation_text="Average", annotation_position="bottom right")
+        fig = px.bar(df_agg, x=x_column, y=y_column)
 
     # Add average lines if checked
     if add_avg_line:
-        avg_x = df[x_column].mean()
-        avg_y = df[y_column].mean()
-
-        # Add horizontal average line
-        fig.add_hline(y=avg_y, line_dash="dash", line_color="gold", annotation_text="Avg Y", annotation_position="bottom right")
+        if pd.api.types.is_numeric_dtype(df_agg[x_column]):
+            avg_x = df_agg[x_column].mean()
+            fig.add_vline(x=avg_x, line_dash="dash", line_color="gold", annotation_text="Avg X", annotation_position="top right")
+            
+            fig.add_annotation(
+                xref="x", yref="paper",
+                x=avg_x, y=1.05,
+                text=f"Avg X: {avg_x:.2f}",
+                showarrow=True,
+                arrowhead=2,
+                ax=0,
+                ay=0,
+                font=dict(color="yellow")
+            )
         
-        # Add vertical average line
-        fig.add_vline(x=avg_x, line_dash="dash", line_color="gold", annotation_text="Avg X", annotation_position="top right")
-        
-        # Add annotation for the average values
-        fig.add_annotation(
-            xref="paper", yref="y",
-            x=1.05, y=avg_y,
-            text=f"Avg Y: {avg_y:.2f}",
-            showarrow=True,
-            arrowhead=2,
-            ax=0,
-            ay=-40,
-            font=dict(color="yellow")
-        )
-        
-        fig.add_annotation(
-            xref="x", yref="paper",
-            x=avg_x, y=1.05,
-            text=f"Avg X: {avg_x:.2f}",
-            showarrow=True,
-            arrowhead=2,
-            ax=0,
-            ay=0,
-            font=dict(color="yellow")
-        )
+        if pd.api.types.is_numeric_dtype(df_agg[y_column]):
+            avg_y = df_agg[y_column].mean()
+            fig.add_hline(y=avg_y, line_dash="dash", line_color="gold", annotation_text="Avg Y", annotation_position="bottom right")
+            
+            fig.add_annotation(
+                xref="paper", yref="y",
+                x=1.05, y=avg_y,
+                text=f"Avg Y: {avg_y:.2f}",
+                showarrow=True,
+                arrowhead=2,
+                ax=0,
+                ay=-40,
+                font=dict(color="yellow")
+            )
 
     fig.update_layout(title=title)
     st.plotly_chart(fig)
@@ -92,14 +95,23 @@ def create_heatmap(df):
     st.plotly_chart(fig)
 
 def create_scatter(df):
-    x_col = st.selectbox('Select X column:', df.select_dtypes(include=['number']).columns.tolist())
-    y_col = st.selectbox('Select Y column:', df.select_dtypes(include=['number']).columns.tolist())
-    hue_col = st.selectbox('Hue:', [None] + df.select_dtypes(include=['object', 'category']).columns.tolist())
-    style_col = st.selectbox('Style:', [None] + list(df.columns))
-    size_col = st.selectbox('Size:', [None] + list(df.select_dtypes(include=['number']).columns.tolist()))
+    col1, col2, col3, col4, col5 = st.columns(5)
+    with col1:
+        x_col = st.selectbox('X-axis', df.select_dtypes(include=['number']).columns.tolist())
+    with col2:
+        y_col = st.selectbox('Y-axis', df.select_dtypes(include=['number']).columns.tolist())
+    with col3:
+        hue_col = st.selectbox('Legend', [None] + list(df.columns))
+    with col4:
+        style_col = st.selectbox('Style:', [None] + list(df.columns))
+    with col5:
+        size_col = st.selectbox('Size:', [None] + list(df.select_dtypes(include=['number']).columns.tolist()))
+    col1, col2= st.columns(2)
+    with col1:
+        add_reg_line = st.checkbox('Add Regression Line', value=False)
+    with col2:
+        add_avg_line = st.checkbox('Add Average Line', value=False)
     title = st.text_input("Enter title for the scatter plot", value=f"{x_col} vs {y_col} scatter Plot")
-    add_reg_line = st.checkbox('Add Regression Line', value=False)
-    add_avg_line = st.checkbox('Add Average Line', value=False)
     # Create the scatter plot
     if hue_col:
         fig = px.scatter(df, x=x_col, y=y_col, color=hue_col, hover_name=style_col, size=size_col)
@@ -155,12 +167,18 @@ def create_scatter(df):
     st.plotly_chart(fig)
 
 def create_histogram(df):
-    x = st.selectbox("Select columns", df.select_dtypes(include=['number']).columns.tolist())   
-    hue = st.selectbox("Select Column for Color (Optional)", ['None'] + df.columns.tolist())
-    stat = st.selectbox("Select Stat", ['count', 'percent', 'probability', 'density', 'probability density'])
-    barmode = st.selectbox("Select Bar Mode", ['stack', 'group', 'overlay', 'relative'])
+    col1, col2, col3, col4, col5 = st.columns(5)
+    with col1:
+        x = st.selectbox("x-axis", df.select_dtypes(include=['number']).columns.tolist())   
+    with col2:
+        hue = st.selectbox("Legend", ['None'] + df.columns.tolist())
+    with col3:
+        stat = st.selectbox("Select Stat", ['count', 'percent', 'probability', 'density', 'probability density'])
+    with col4:
+        barmode = st.selectbox("Select Bar Mode", ['stack', 'group', 'overlay', 'relative'])
     nbins = st.slider("Number of Bins", min_value=1, max_value=100, value=10)
-    cumulative = st.checkbox("Cumulative", value=False)
+    with col5:
+        cumulative = st.checkbox("Cumulative", value=False)
     title = st.text_input("Enter title for the histogram plot", value=f"{x} Histogram Plot")
     # Create the histogram
     if hue == 'None':
@@ -195,45 +213,57 @@ def create_histogram(df):
                       showlegend=True)
     return fig
 
-def create_line_plot(df):
-    # Identify datetime, numeric, and categorical columns
-    datetime_columns = df.select_dtypes(include=['datetime']).columns.tolist()
-    num_columns = df.select_dtypes(include=['number']).columns.tolist()
-    cat_columns = df.select_dtypes(include=['object', 'category']).columns.tolist()
-
-    # Streamlit widgets for user input
-    x = st.selectbox("Select X column", [None] + datetime_columns + num_columns + cat_columns)
-    y = st.selectbox("Select Y column", [None] + num_columns)
+def area_chart(df):
+    col1,col2,col3,col4 = st.columns(4)
+    with col1:
+        x_axis = st.selectbox("Select X Axis", ["None"] + list(df.columns), index=0)
+    with col2:
+        y_axis = st.selectbox("Select Y Axis", ["None"] + list(df.columns), index=0)
+    with col3:
+        legend = st.selectbox("Select Legend", ["None"] + list(df.columns), index=0)
     
-    # Select optional parameters
-    hue = st.selectbox("Select Hue (categorical column)", [None] + cat_columns)    
-    # Line and marker options
-    markers = st.checkbox("Show Markers", value=False)
-    
-    # Average line option
-    add_avg_line = st.checkbox("Add Average Line", value=False)
-    
+    ch1,ch2 = st.columns(2)
+    with ch1:
+        markers = st.checkbox("Show Markers", value=False)
+    with ch2:
+        add_avg_line = st.checkbox("Add Average Line", value=False)
     # Title input
-    title = st.text_input("Enter title for the line plot", value=f"{x} vs {y} Line Plot")
+    title = st.text_input("Enter title for the line plot", value=f"{x_axis} vs {y_axis} Line Plot")
+
+    if x_axis == "None" or y_axis == "None":
+        st.warning("Please select X and Y axis for visualization.")
+        return
+    with col4:
+        agg_func = st.selectbox("Aggregation Function", ["sum", "mean", "count", "nunique", "std", "var", "median", "min", "max"], index=0)
     
-    # Create the line plot
-    if hue:
-        fig = px.line(df, x=x, y=y, color=hue, markers=markers)
-    else:
-        fig = px.line(df, x=x, y=y, markers=markers)
-    
+    try:
+        df_agg = df.groupby([x_axis] + ([legend] if legend != "None" else []))[y_axis].agg(agg_func).reset_index()
+    except Exception as e:
+        st.error(f"Error in aggregation: {e}")
+        return
+
+    fig = px.area(df_agg, x=x_axis, y=y_axis, color=legend if legend != "None" else None, markers= markers)
     # Add average lines if checked
     if add_avg_line:
-        avg_y = df[y].mean()
-        avg_x = df[x].mean()
-        
-        # Add average line for Y
+        avg_y = df[y_axis].mean()
         fig.add_hline(y=avg_y, line_dash="dash", line_color="gold", annotation_text="Avg Y", annotation_position="bottom right")
+
+        # Check if x_axis is numeric
+        if pd.api.types.is_numeric_dtype(df[x_axis]):
+            avg_x = df[x_axis].mean()
+            fig.add_vline(x=avg_x, line_dash="dash", line_color="gold", annotation_text="Avg X", annotation_position="top right")
+
+            fig.add_annotation(
+                xref="x", yref="paper",
+                x=avg_x, y=1.05,
+                text=f"Avg X: {avg_x:.2f}",
+                showarrow=True,
+                arrowhead=2,
+                ax=0,
+                ay=0,
+                font=dict(color="gold")
+            )
         
-        # Add average line for X
-        fig.add_vline(x=avg_x, line_dash="dash", line_color="gold", annotation_text="Avg X", annotation_position="top right")
-        
-        # Add annotation for the average values
         fig.add_annotation(
             xref="paper", yref="y",
             x=1.05, y=avg_y,
@@ -242,57 +272,127 @@ def create_line_plot(df):
             arrowhead=2,
             ax=0,
             ay=-40,
-            font=dict(color="gold")
+            font=dict(color="red")
         )
         
+    fig.update_layout(title=title)
+    st.plotly_chart(fig)
+
+def line_plot(df):
+    col1,col2,col3,col4 = st.columns(4)
+    with col1:
+        x_axis = st.selectbox("Select X Axis", ["None"] + list(df.columns), index=0)
+    with col2:
+        y_axis = st.selectbox("Select Y Axis", ["None"] + list(df.columns), index=0)
+    with col3:
+        legend = st.selectbox("Select Legend", ["None"] + list(df.columns), index=0)
+    
+    ch1,ch2 = st.columns(2)
+    with ch1:
+        markers = st.checkbox("Show Markers", value=False)
+    with ch2:
+        add_avg_line = st.checkbox("Add Average Line", value=False)
+    # Title input
+    title = st.text_input("Enter title for the line plot", value=f"{x_axis} vs {y_axis} Line Plot")
+
+    if x_axis == "None" or y_axis == "None":
+        st.warning("Please select X and Y axis for visualization.")
+        return
+    with col4:
+        agg_func = st.selectbox("Aggregation Function", ["sum", "mean", "count", "nunique", "std", "var", "median", "min", "max"], index=0)
+    
+    try:
+        df_agg = df.groupby([x_axis] + ([legend] if legend != "None" else []))[y_axis].agg(agg_func).reset_index()
+    except Exception as e:
+        st.error(f"Error in aggregation: {e}")
+        return
+
+    fig = px.line(df_agg, x=x_axis, y=y_axis, color=legend if legend != "None" else None, markers= markers)
+    # Add average lines if checked
+    if add_avg_line:
+        avg_y = df[y_axis].mean()
+        fig.add_hline(y=avg_y, line_dash="dash", line_color="gold", annotation_text="Avg Y", annotation_position="bottom right")
+
+        # Check if x_axis is numeric
+        if pd.api.types.is_numeric_dtype(df[x_axis]):
+            avg_x = df[x_axis].mean()
+            fig.add_vline(x=avg_x, line_dash="dash", line_color="gold", annotation_text="Avg X", annotation_position="top right")
+
+            fig.add_annotation(
+                xref="x", yref="paper",
+                x=avg_x, y=1.05,
+                text=f"Avg X: {avg_x:.2f}",
+                showarrow=True,
+                arrowhead=2,
+                ax=0,
+                ay=0,
+                font=dict(color="gold")
+            )
+        
         fig.add_annotation(
-            xref="x", yref="paper",
-            x=avg_x, y=1.05,
-            text=f"Avg X: {avg_x:.2f}",
+            xref="paper", yref="y",
+            x=1.05, y=avg_y,
+            text=f"Avg Y: {avg_y:.2f}",
             showarrow=True,
             arrowhead=2,
             ax=0,
-            ay=0,
-            font=dict(color="gold")
+            ay=-40,
+            font=dict(color="red")
         )
-
-    # Update layout
+        
     fig.update_layout(title=title)
-    
-    # Display the plot
     st.plotly_chart(fig)
 
 def create_pie_chart(df):
+    col1, col2= st.columns(2)
     # Select categorical columns
     cat_columns = df.select_dtypes(include=['object', 'category']).columns.tolist()
     if not cat_columns:
         st.warning("No categorical columns available in the DataFrame.")
         return
-    category_col = st.selectbox("Select Category column", cat_columns)
+    with col1:
+        category_col = st.selectbox("Select Category Variable", [None] + cat_columns, index=0)
     if category_col:
         # Select the category to highlight
-        highlight_category = st.selectbox("Select Category to Highlight", df[category_col].unique())
+        with col2:
+            highlight_category = st.selectbox("Select Category to Highlight", [None] + df[category_col].unique().tolist(), index=0)
+        
+        col3, col4= st.columns(2)
+        with col3:       
+            title = st.text_input("Enter title for the pie chart", value=f"{category_col} Pie Chart")
+
+        # Add checkbox for donut chart
+        with col4:
+            donut_chart = st.checkbox("Donut Chart", value=False)
+
         # Count the occurrences of each category
-        data_counts = df[category_col].value_counts(ascending = False)
-        title = st.text_input("Enter title for the pie chart", value=f"{category_col} Pie Chart")
+        data_counts = df[category_col].value_counts(ascending=False)
+
         # Create a pull list to highlight the selected category
         pull = [0.1 if name == highlight_category else 0 for name in data_counts.index]
+
         # Create the pie chart using go.Figure
-        fig = go.Figure(data=[go.Pie(labels=data_counts.index, values=data_counts.values, pull=pull)])
+        fig = go.Figure(data=[go.Pie(labels=data_counts.index, values=data_counts.values, pull=pull, hole=0.3 if donut_chart else 0)])
+
         # Update layout with the title
         fig.update_layout(title=title)
+
         # Display the plot
         st.plotly_chart(fig)
     else:
-        st.warning("Please select a valid categorical column.")
+        st.warning("Please select a valid categorical variable.")
 
 def create_boxplot(df):
+    col1, col2, col3, = st.columns(3)
+
     cat_columns = df.select_dtypes(include=['object', 'category']).columns.tolist()
     num_columns = df.select_dtypes(include=['number']).columns.tolist()
-
-    x_col = st.selectbox("Select X column", num_columns + cat_columns)
-    y_col = st.selectbox("Select Y column", [None]+ num_columns + cat_columns)
-    hue = st.selectbox("Select Hue (categorical column)", [None] + cat_columns)
+    with col1:
+        x_col = st.selectbox("Select X (categorical) variable", num_columns + cat_columns)
+    with col2:
+        y_col = st.selectbox("Select Y (numerical) variable", [None]+ num_columns + cat_columns)
+    with col3:
+        hue = st.selectbox("Select Hue (categorical variable)", [None] + cat_columns)
     title = st.text_input("Enter title for the box plot", value=f"{x_col} vs {y_col} box plot")
     
     if hue:
@@ -309,11 +409,15 @@ def create_count_plot(df):
     if not cat_columns:
         st.warning("No categorical columns available in the DataFrame.")
         return
-
-    x = st.selectbox("Select X column", cat_columns)
-    hue = st.selectbox("Select Hue (categorical column)", [None] + cat_columns)
-    stat = st.selectbox("Select Stat", ['count', 'percent', 'proportion', 'probability'])
-    add_avg_line = st.checkbox('Add Average Line', value=False)
+    col1, col2, col3, col4= st.columns(4)
+    with col1:
+        x = st.selectbox("x-axis", cat_columns)
+    with col2:
+        hue = st.selectbox("Legends", [None] + cat_columns)
+    with col3:
+        stat = st.selectbox("Stats", ['count', 'percent', 'proportion', 'probability'])
+    with col4:
+        add_avg_line = st.checkbox('Average Line', value=False)
     title = st.text_input("Enter title for the count plot", value=f"{x} count plot")
     
     if x:
@@ -333,7 +437,7 @@ def create_count_plot(df):
         fig.update_layout(title=title)
         st.plotly_chart(fig)
     else:
-        st.warning("Please select a valid categorical column.")
+        st.warning("Please select a valid categorical variable.")
 
 def create_kde_plot(df):
     # Identify numeric and categorical columns
@@ -341,20 +445,28 @@ def create_kde_plot(df):
     cat_columns = df.select_dtypes(include=['object', 'category']).columns.tolist()
 
     # Streamlit widgets for user input
-    x = st.selectbox("Select X column", [None] + num_columns )
-    y = st.selectbox("Select Y column", [None] + num_columns)
-    hue = st.selectbox("Select Hue (categorical column)", [None] + cat_columns)
-    palette = st.selectbox("Select Color Palette", 
+    col1, col2, col3, col4= st.columns(4)
+    with col1:
+        x = st.selectbox("x-axis", [None] + num_columns )
+    with col2:
+        y = st.selectbox("y-axis", [None] + num_columns)
+    with col3:
+        hue = st.selectbox("Legends", [None] + cat_columns)
+    with col4:
+        palette = st.selectbox("Select Color Palette", 
                            ['bright', 'tab10', 'deep', 'muted', 'dark', 'Paired', 'Set2', 
                             'colorblind', 'rocket', 'viridis', 'icefire', 'Spectral'])
-    add_avg_line = st.checkbox('Add Average Line', value=False)
-    fill = st.checkbox('Fill KDE', value=False)
+    col1, col2= st.columns(2)
+    with col1:
+        add_avg_line = st.checkbox('Add Average Line', value=False)
+    with col2:
+        fill = st.checkbox('Fill KDE', value=False)
 
     fig, ax = plt.subplots()
     plot = sns.kdeplot(data=df, x=x, y=y, hue=hue,fill=fill, palette=palette, ax=ax)
     plt.xticks(rotation=90)
 
-    # Add average lines if selected and columns are numeric
+    # Add average lines if selected and variables are numeric
     if add_avg_line:
         if x in num_columns:
             avg_x = df[x].mean()
@@ -373,13 +485,81 @@ def create_kde_plot(df):
     plt.show()
     st.pyplot(fig)
 
+def treemap(df):
+    col1, col2, col3, col4 = st.columns(4)
+    with col1:
+        x_axis = st.selectbox("Categorical Column", ["None"] + list(df.select_dtypes(include=['object', 'category']).columns), index=0)
+    with col2:
+        y_axis = st.selectbox("Numeric Columns", ["None"] + list(df.select_dtypes(include=[float, int]).columns), index=0)
+    with col3:
+        legend = st.selectbox("Categorical Columns", ["None"] + list(df.select_dtypes(include=['object', 'category']).columns), index=0)
+    
+    if x_axis == "None" or y_axis == "None":
+        st.warning("Please select appropriate columns for visualization.")
+        return
+    
+    with col4:
+        agg_func = st.selectbox("Aggregation Function", ["sum", "mean", "count", "nunique", "std", "var", "median", "min", "max"], index=0)
+
+    try:
+        df_agg = df.groupby([x_axis] + ([legend] if legend != "None" else []))[y_axis].agg(agg_func).reset_index()
+    except Exception as e:
+        st.error(f"Error in aggregation: {e}")
+        return
+    
+    fig = px.treemap(df_agg, path=[legend, x_axis] if legend != "None" else [x_axis], values=y_axis)
+    st.plotly_chart(fig)
+
+def table(df):
+    col1, col2, col3, col4 = st.columns(4)
+    with col1:
+        x_axis = st.selectbox("Categorical Column", ["None"] + list(df.select_dtypes(include=['object', 'category']).columns), index=0)
+    with col2:
+        y_axes = st.multiselect("Numeric Columns", list(df.select_dtypes(include=[float, int]).columns))
+    with col3:
+        legend = st.selectbox("Categorical Columns", ["None"] + list(df.select_dtypes(include=['object', 'category']).columns), index=0)
+
+    if x_axis == "None" or not y_axes:
+        st.warning("Please select appropriate columns for visualization.")
+        return
+
+    with col4:
+        agg_func = st.selectbox("Aggregation Function", ["sum", "mean", "count", "nunique", "std", "var", "median", "min", "max"], index=0)
+
+    try:
+        df_agg_list = []
+        for y_axis in y_axes:
+            if not pd.api.types.is_numeric_dtype(df[y_axis]):
+                st.warning(f"Column '{y_axis}' must be numeric.")
+                continue
+            df_agg = df.groupby([x_axis] + ([legend] if legend != "None" else []))[y_axis].agg(agg_func).reset_index()
+            df_agg_list.append(df_agg)
+        
+        if not df_agg_list:
+            st.warning("No valid numeric columns selected.")
+            return
+
+        df_agg = pd.concat(df_agg_list, axis=1)
+        df_agg = df_agg.loc[:,~df_agg.columns.duplicated()]  # Remove duplicated columns
+    except Exception as e:
+        st.error(f"Error in aggregation: {e}")
+        return
+
+    st.write(df_agg)
+
+
 # seaborn graphs
 def mat_create_pairplot(df):
+    col1, col2, col3, col4 = st.columns(4)
+
     cat_column = df.select_dtypes(include=['object'])
     columns = cat_column.columns.tolist()
-    kind = st.selectbox("Select type of kind", ['scatter', 'kde', 'hist', 'reg'])
-    hue = st.selectbox("Select Hue (categorical column)", [None] + columns)
-    palette = st.selectbox("Select Color Palette", ['bright', 'tab10','rocket', 'viridis','icefire','Paired',"Set2"])
+    with col1:
+        kind = st.selectbox("Graph Type", ['scatter', 'kde', 'hist', 'reg'])
+    with col2:
+        hue = st.selectbox("Legends", [None] + columns)
+    with col3:
+        palette = st.selectbox("Color", ['bright', 'tab10','rocket', 'viridis','icefire','Paired',"Set2"])
     sns.pairplot(df, hue=hue, palette=palette, kind=kind)
     plt.legend(bbox_to_anchor=(1.05, 0.5), loc='upper left')
     plt.grid(True)
@@ -387,10 +567,6 @@ def mat_create_pairplot(df):
     st.pyplot(plt)
 
 def mat_create_bar_plot(df):
-    if df.empty:
-        st.write("The DataFrame is empty. Please provide data to plot.")
-        return None
-    # Select numeric and date columns
     num_columns = df.select_dtypes(include=['number']).columns.tolist()
     date_columns = df.select_dtypes(include=['datetime']).columns.tolist()
 
@@ -402,13 +578,22 @@ def mat_create_bar_plot(df):
             date_columns.remove(col)
 
     # Select x and y columns
-    x_column = st.selectbox('Select X column', df.columns)
-    y_column = st.selectbox('Select Y column', df.columns)
-    plot_type = st.selectbox('Select plot type', ['Vertical', 'Horizontal'])
-    title = st.text_input("Enter title for the Bar Plot", value=f"{x_column} vs {y_column} Bar Plot")
-    hue = st.selectbox('Select Hue', [None] + list(df.columns))
-    palette = st.selectbox("Palette", ['bright', 'tab10', 'deep', 'muted', 'dark', 'Paired', 'Set2', 'colorblind', 'rocket', 'viridis', 'icefire', 'Spectral'])
-    add_avg_line = st.checkbox('Add Average Line', value=False)
+    col1,col2, col3, col4,col5 = st.columns(5)
+    with col1:
+        x_column = st.selectbox('X-axis', df.columns)
+    with col2:
+        y_column = st.selectbox('Y-axis', df.columns)
+    with col3:
+        plot_type = st.selectbox('Plot Type', ['Vertical', 'Horizontal'])
+    with col4:
+        hue = st.selectbox('Legends', [None] + list(df.columns))
+    with col5:
+        palette = st.selectbox("Color Option", ['bright', 'tab10', 'deep', 'muted', 'dark', 'Paired', 'Set2', 'colorblind', 'rocket', 'viridis', 'icefire', 'Spectral'])
+    col1,col2 = st.columns(2)
+    with col1:
+        title = st.text_input("Enter title for the Bar Plot", value=f"{x_column} vs {y_column} Bar Plot")
+    with col2:
+        add_avg_line = st.checkbox('Average Line', value=False)
 
     # Validate selected columns
     if x_column not in df.columns or y_column not in df.columns:
@@ -472,11 +657,18 @@ def mat_create_scatter(df):
     # Define options for user input
     def get_unique_values(column):
         return sorted(df[column].unique().tolist())
-    x_col = st.selectbox('Select X column:', df.select_dtypes(include=['number']))
-    y_col = st.selectbox('Select Y column:', df.select_dtypes(include=['number']))
-    hue_col = st.selectbox('Hue:', [None] + df.select_dtypes(include=['object', 'category']).columns.tolist(), format_func=lambda x: 'None' if x is None else x)
-    style_col = st.selectbox('Style:', [None] + list(df.columns), format_func=lambda x: 'None' if x is None else x)
-    size_col = st.selectbox('Size:', [None] + list(df.columns), format_func=lambda x: 'None' if x is None else x)
+ 
+    col1,col2, col3, col4,col5 = st.columns(5)
+    with col1:
+        x_col = st.selectbox('X-axis:', df.columns)
+    with col2:
+        y_col = st.selectbox('Y-axis:', df.columns)
+    with col3:
+        hue_col = st.selectbox('Legend:', [None] + list(df.columns), format_func=lambda x: 'None' if x is None else x)
+    with col4:
+        style_col = st.selectbox('Style:', [None] + list(df.columns), format_func=lambda x: 'None' if x is None else x)
+    with col5:
+        size_col = st.selectbox('Size:', [None] + list(df.columns), format_func=lambda x: 'None' if x is None else x)
     title = st.text_input("Enter title for the scatter plot", value=f"{x_col} vs {y_col} scatter Plot")
     
     # Check if both x and y columns are numerical
@@ -547,20 +739,38 @@ def mat_create_scatter(df):
 
 def mat_create_histplot(df):
     # Select numerical columns
+    col1,col2, col3, col4,col5 = st.columns(5)
     num_columns = df.select_dtypes(include=['number']).columns.tolist()   
-    x = st.selectbox("Select Numerical column", num_columns)
-    hue = st.selectbox("Select Hue (categorical column)", [None] + df.select_dtypes(include=['object', 'category']).columns.tolist())
-    palette = st.selectbox("Select Color Palette", ['deep', 'muted', 'bright', 'dark', 'colorblind'])
-    stat = st.selectbox("Select Stat", ['count', 'frequency', 'density', 'probability'])
-    multiple = st.selectbox("Multiple", ['layer', 'dodge', 'stack', 'fill'])
-    element = st.selectbox("Element", ['bars', 'step'])
-    palette = st.selectbox("Palette", ['bright', 'tab10', 'deep', 'muted', 'dark', 'Paired', 'Set2', 'colorblind', 'rocket', 'viridis', 'icefire', 'Spectral'])
-    bins = st.slider("Number of Bins", min_value=1, max_value=100, value=10)
-    shrink = st.slider("Adjust Bar Size", min_value=0.1, max_value=1.0, step=0.1, value=1.0)
-    fill = st.checkbox("Fill", value=True)
-    cumulative = st.checkbox("Cumulative")
-    kde = st.checkbox("KDE")
-    add_avg_line = st.checkbox('Add Average Line', value=False)
+    with col1:
+        x = st.selectbox("x-axis", num_columns)
+    with col2:
+        hue = st.selectbox("Legends", [None] + df.select_dtypes(include=['object', 'category']).columns.tolist())
+    with col3:
+        palette = st.selectbox("Color", ['deep', 'muted', 'bright', 'dark', 'colorblind'])
+    with col4:
+        stat = st.selectbox("Stat", ['count', 'frequency', 'density', 'probability'])
+    with col5:
+        multiple = st.selectbox("Multiple", ['layer', 'dodge', 'stack', 'fill'])
+
+    col1,col2, col3, col4= st.columns(4)
+    with col1:
+        element = st.selectbox("Element", ['bars', 'step'])
+    with col4:
+        palette = st.selectbox("Color", ['bright', 'tab10', 'deep', 'muted', 'dark', 'Paired', 'Set2', 'colorblind', 'rocket', 'viridis', 'icefire', 'Spectral'])
+    with col2:
+        bins = st.slider("Number of Bins", min_value=1, max_value=100, value=10)
+    with col3:
+        shrink = st.slider("Adjust Bar Size", min_value=0.1, max_value=1.0, step=0.1, value=1.0)
+
+    col1,col2, col3, col4= st.columns(4)
+    with col1:
+        fill = st.checkbox("Fill", value=True)
+    with col2:
+        cumulative = st.checkbox("Cumulative")
+    with col3:
+        kde = st.checkbox("KDE")
+    with col4:
+        add_avg_line = st.checkbox('Add Average Line', value=False)
     # Plot the histogram
     if x:
         fig, ax = plt.subplots()
@@ -574,7 +784,7 @@ def mat_create_histplot(df):
         st.pyplot(fig)
 
     else:
-        st.warning("Please select a valid numerical column.")
+        st.warning("Please select a valid numerical variable.")
 
 def mat_create_line_plot(df):
     for col in df.select_dtypes(include=['datetime']):
@@ -589,24 +799,39 @@ def mat_create_line_plot(df):
     num_columns = df.select_dtypes(include=['number']).columns.tolist()
     cat_columns = df.select_dtypes(include=['object', 'category']).columns.tolist()
     # Streamlit widgets for user input
-    x = st.selectbox("Select X column", [None] + num_columns + cat_columns)
-    y = st.selectbox("Select Y column", [None] + num_columns + cat_columns)
-    hue = st.selectbox("Select Hue (categorical)", [None] + cat_columns)
-    size = st.selectbox("Select Size (numeric)", [None] + num_columns)
-    style = st.selectbox("Select Style (categorical)", [None] + cat_columns)
-    markers = st.checkbox("Show Markers", value=False)
-    dashes = st.checkbox("Show Dashes", value=True)
-    palette = st.selectbox("Select Color Palette", 
+    col1,col2, col3, col4= st.columns(4)
+    with col1:
+        x = st.selectbox("x-axis", [None] + num_columns + cat_columns)
+    with col2:
+        y = st.selectbox("y-axis", [None] + num_columns + cat_columns)
+    with col3:
+        hue = st.selectbox("Legends", [None] + cat_columns)
+    with col4:
+        size = st.selectbox("Size", [None] + num_columns)
+    col1,col2, col3, col4= st.columns(4)
+    with col1:
+        style = st.selectbox("Style", [None] + cat_columns)
+    with col2:
+        palette = st.selectbox("Color", 
                            ['bright', 'tab10', 'deep', 'muted', 'dark', 'Paired', 'Set2', 
                             'colorblind', 'rocket', 'viridis', 'icefire', 'Spectral'])
-    estimator = st.selectbox("Select Estimator", ['mean', 'median', 'sum', 'min', 'max'])
-    add_avg_line = st.checkbox("Add Average Line", value=False)
-    markers = st.selectbox("Select Marker points",['.', ',', 'o', 'v', '^', '<', '>', '1', '2', '3', '4', 's', 'p', '*', 'h', 'H', '+', 'x', 'D', 'd', '|', '_'])
-    marker_size = st.slider('Marker Size', min_value=1, max_value=100, value=14)
+    with col3:
+        estimator = st.selectbox("Estimator", ['mean', 'median', 'sum', 'min', 'max'])
+    with col4:
+        markers = st.selectbox("Marker points",['.', ',', 'o', 'v', '^', '<', '>', '1', '2', '3', '4', 's', 'p', '*', 'h', 'H', '+', 'x', 'D', 'd', '|', '_'])
+    col1,col2, col3, col4= st.columns(4)
+    with col1:
+        marker_size = st.slider('Marker Size', min_value=1, max_value=100, value=14)
+    with col2:
+        markers = st.checkbox("Show Markers", value=False)
+    with col3:
+        dashes = st.checkbox("Show Dashes", value=True)
+    with col4:
+        add_avg_line = st.checkbox("Average Line", value=False)
     title = st.text_input("Enter title for the line plot", value=f"{x} vs {y} line Plot")
     # Validate selected inputs
     if not x or not y:
-        st.warning("Please select valid X and Y columns.")
+        st.warning("Please select valid X and Y variables.")
         return
     # Create the figure
     fig, ax = plt.subplots(figsize=(25, 15))
@@ -648,7 +873,7 @@ def mat_create_line_plot(df):
 def mat_create_pie_chart(df):
     # Select categorical column
     cat_columns = df.select_dtypes(include=['object', 'category']).columns.tolist()
-    category_col = st.selectbox("Select Category column", cat_columns)
+    category_col = st.selectbox("Select Category Variable", cat_columns)
     
     # Color palette selection
     palette = st.selectbox("Select Color Palette", 
@@ -670,17 +895,21 @@ def mat_create_pie_chart(df):
         plt.show()
         st.pyplot(fig)
     else:
-        st.warning("Please select a valid category column.")
+        st.warning("Please select a valid category variable.")
 
 def mat_create_boxplot(df):
     # Select categorical and numerical columns
     cat_columns = df.select_dtypes(include=['object', 'category']).columns.tolist()
     num_columns = df.select_dtypes(include=['number']).columns.tolist()
-
-    x_col = st.selectbox("Select X column", num_columns + cat_columns)
-    y_col = st.selectbox("Select Y column", [None]+ num_columns + cat_columns)
-    hue = st.selectbox("Select Hue (categorical column)", [None] + cat_columns)
-    palette = st.selectbox("Select Color Palette", 
+    col1, col2, col3, col4 = st.columns(4)
+    with col1:
+        x_col = st.selectbox("x-axis", num_columns + cat_columns)
+    with col2:
+        y_col = st.selectbox("y-axis", [None]+ num_columns + cat_columns)
+    with col3:
+        hue = st.selectbox("Legends", [None] + cat_columns)
+    with col4:
+        palette = st.selectbox("Color", 
                            ['bright', 'tab10', 'deep', 'muted', 'dark', 'Paired', 'Set2', 
                             'colorblind', 'rocket', 'viridis', 'icefire', 'Spectral'])
 
@@ -692,15 +921,18 @@ def mat_create_boxplot(df):
         plt.show()
         st.pyplot(fig)
     else:
-        st.warning("Please select valid X and Y columns.")
+        st.warning("Please select valid X and Y variables.")
 
 def mat_create_count_plot(df):
-    x = st.selectbox("Select X column", df.select_dtypes(include=['object', 'category']).columns.tolist())
-    cat_columns = df.select_dtypes(include=['object', 'category']).columns.tolist()
-    num_columns = df.select_dtypes(include=['number']).columns.tolist()
-    hue = st.selectbox("Select Hue (categorical column)", [None] + df.select_dtypes(include=['object', 'category']).columns.tolist())
-    palette = st.selectbox("Select Color Palette", ['bright', 'tab10', 'deep', 'muted', 'dark', 'Paired', 'Set2', 'colorblind', 'rocket', 'viridis', 'icefire', 'Spectral'])
-    stat = st.selectbox("Select Stat", ['count', 'percent', 'proportion', 'probability'])
+    col1, col2, col3, col4=st.columns(4)
+    with col1:
+        x = st.selectbox("x-axis", df.select_dtypes(include=['object', 'category']).columns.tolist())
+    with col2:
+        hue = st.selectbox("Legends", [None] + df.select_dtypes(include=['object', 'category']).columns.tolist())
+    with col3:
+        palette = st.selectbox("Color", ['bright', 'tab10', 'deep', 'muted', 'dark', 'Paired', 'Set2', 'colorblind', 'rocket', 'viridis', 'icefire', 'Spectral'])
+    with col4:
+        stat = st.selectbox("Stat", ['count', 'percent', 'proportion', 'probability'])
     add_avg_line = st.checkbox('Average Line', value=False)
     fig, ax = plt.subplots()
     plt.figure(figsize=(20,20))
@@ -719,7 +951,7 @@ def mat_create_count_plot(df):
         ax.axhline(avg_y, color='red', linestyle='--', linewidth=1, label=f'Avg Y: {avg_y:.1f}')
         ax.text(0, avg_y, f'{avg_y:.1f}', color='red', ha='right', va='center', transform=ax.get_yaxis_transform(), fontsize=10)
 
-    # Add bar labels if hue column has less than or equal to 10 unique values
+    # Add bar labels if hue variable has less than or equal to 10 unique values
     if hue is None or df[hue].nunique() <= 15:
         for container in plot.containers:
             plot.bar_label(container, label_type="edge", rotation=90,padding=3)
@@ -728,39 +960,3 @@ def mat_create_count_plot(df):
     plt.show()
     st.pyplot(fig)
 
-def mat_create_kde_plot(df):
-    # Identify numeric and categorical columns
-    num_columns = df.select_dtypes(include=['number']).columns.tolist()
-    cat_columns = df.select_dtypes(include=['object', 'category']).columns.tolist()
-
-    # Streamlit widgets for user input
-    x = st.selectbox("Select X column", [None] + num_columns )
-    y = st.selectbox("Select Y column", [None] + num_columns)
-    hue = st.selectbox("Select Hue (categorical column)", [None] + cat_columns)
-    palette = st.selectbox("Select Color Palette", 
-                           ['bright', 'tab10', 'deep', 'muted', 'dark', 'Paired', 'Set2', 
-                            'colorblind', 'rocket', 'viridis', 'icefire', 'Spectral'])
-    add_avg_line = st.checkbox('Add Average Line', value=False)
-
-    fig, ax = plt.subplots()
-    plot = sns.kdeplot(data=df, x=x, y=y, hue=hue, palette=palette, ax=ax)
-    plt.xticks(rotation=90)
-
-    # Add average lines if selected and columns are numeric
-    if add_avg_line:
-        if x in num_columns:
-            avg_x = df[x].mean()
-            ax.axvline(avg_x, color='blue', linestyle='--', linewidth=1, label=f'Avg X: {avg_x:.1f}')
-            ax.text(avg_x, ax.get_ylim()[1], f'{avg_x:.1f}', color='blue', ha='center', va='top', 
-                    transform=ax.get_xaxis_transform(), fontsize=10)
-        
-        if y in num_columns:
-            avg_y = df[y].mean()
-            ax.axhline(avg_y, color='red', linestyle='--', linewidth=1, label=f'Avg Y: {avg_y:.1f}')
-            ax.text(0, avg_y, f'{avg_y:.1f}', color='red', ha='right', va='center', 
-                    transform=ax.get_yaxis_transform(), fontsize=10)
-    
-    plt.tight_layout()
-    plt.legend(loc='upper right')
-    plt.show()
-    st.pyplot(fig)
