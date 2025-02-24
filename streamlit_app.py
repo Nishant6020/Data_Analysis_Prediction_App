@@ -1125,6 +1125,48 @@ def text_format(df):
             st.success("Column formatted successfully!")
             st.rerun()
 
+def filter_dataframe(df):
+    df_filtered = df.copy()
+    
+    # Date Filter
+    date_filter = st.sidebar.toggle("Date Filter")
+    if date_filter:
+        date_columns = [col for col in df_filtered.columns if df_filtered[col].dtype == 'datetime64[ns]']
+        if date_columns:
+            column = st.sidebar.selectbox("Select Date Column", date_columns)
+            start_date = pd.to_datetime(df_filtered[column]).min()
+            end_date = pd.to_datetime(df_filtered[column]).max()
+            date1 = pd.to_datetime(st.sidebar.date_input("Start Date", start_date))
+            date2 = pd.to_datetime(st.sidebar.date_input("End Date", end_date))
+            df_filtered = df_filtered[(df_filtered[column] >= date1) & (df_filtered[column] <= date2)]
+        else:
+            st.sidebar.write("No Date Columns Available.")
+    
+    # Column filter panel
+    column_filter = st.sidebar.toggle("Filter Column Data")
+    if column_filter:
+        st.header("Filter Panel")
+        
+        selected_columns = st.sidebar.multiselect("Select columns to filter", df.select_dtypes(include=['object', "number", 'category']).columns.tolist())
+        df_filtered = df.copy()
+        
+        for column in selected_columns:
+            unique_values = df[column].unique()
+            if df_filtered[column].dtype in ['float64', 'int64']:
+                min_val, max_val = int(df_filtered[column].min()), int(df_filtered[column].max())
+                range_selected = st.slider(f"{column}", min_val, max_val, (min_val, max_val))
+                df_filtered = df_filtered[(df_filtered[column] >= range_selected[0]) & (df_filtered[column] <= range_selected[1])]
+            else:
+                with st.expander(f"{column}"):
+                    for value in unique_values:
+                        selected = st.checkbox(f"{value}", True, key=f"{column}_{value}")
+                        if not selected:
+                            df_filtered = df_filtered[df_filtered[column] != value]
+        
+        st.markdown("---------------------------------------")
+    
+    return df_filtered
+
 
 
 
@@ -1190,6 +1232,7 @@ if external_link and st.sidebar.button("Fetch Data"):
 if 'df' in st.session_state:
         st.sidebar.markdown("________________________")  
         st.sidebar.title("Menu")
+        filter_dataframe(st.session_state.df)
         # Data prerview Section (Initially hidden)
         data_prerview_expander = st.sidebar.expander("Data Preview", expanded=False)
         if data_prerview_expander:
