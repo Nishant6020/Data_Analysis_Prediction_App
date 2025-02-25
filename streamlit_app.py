@@ -1164,9 +1164,6 @@ def filter_dataframe(df):
     return df_filtered
 
 
-
-
-
 # steamlit app
 import streamlit as st
 import pandas as pd
@@ -1244,7 +1241,7 @@ if 'df' in st.session_state:
             ])         
             # Handle Data prerview tasks
             if prerview_option == "Data Preview":
-                data_view(filter_dataframe(st.session_state.df))
+                data_view(st.session_state.df)
             elif prerview_option == "First 5 Rows":
                 st.write(st.session_state.df.head())
             elif prerview_option == "Last 5 Rows":
@@ -1275,8 +1272,8 @@ if 'df' in st.session_state:
             ])
             
             if overview_option == "Data info":
-                st.write(filter_dataframe(st.session_state.df).head(2))
-                summary_info, data_info = get_data_info(filter_dataframe(st.session_state.df))
+                st.write(st.session_state.df.head(2))
+                summary_info, data_info = get_data_info(st.session_state.df)
                 st.write("**DataFrame Summary**")
                 st.write(summary_info)
                 st.write("**Detailed Column Info**")
