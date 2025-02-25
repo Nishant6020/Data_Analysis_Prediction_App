@@ -1,7 +1,7 @@
 import streamlit as st
 
 def home():
-    st.sidebar.image("data1.png")  
+    st.image("data1.png")  
     st.write(
         """
         ### 2N Data Analysis & Model Building Project Overview
