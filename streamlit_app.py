@@ -606,13 +606,12 @@ def classification_models(X_train, X_test, y_train, y_test, col_trans):
             learning_rate = st.slider("Learning Rate", 0.01, 1.0, 0.1)
             model = make_pipeline(col_trans, GradientBoostingClassifier(n_estimators=n_estimators, learning_rate=learning_rate))
 
-        if st.button("Evalute Model"):
-            model.fit(X_train, y_train)
-            y_pred = model.predict(X_test)
-            st.write("Model Score:", model.score(X_test, y_test))
-            st.write('R² Score:', r2_score(y_test, y_pred))
-            st.write('MSE:', mean_squared_error(y_test, y_pred))
-            st.write('MAE:', mean_absolute_error(y_test, y_pred))
+        model.fit(X_train, y_train)
+        y_pred = model.predict(X_test)
+        st.write("Model Score:", model.score(X_test, y_test))
+        st.write('R² Score:', r2_score(y_test, y_pred))
+        st.write('MSE:', mean_squared_error(y_test, y_pred))
+        st.write('MAE:', mean_absolute_error(y_test, y_pred))
 
         # Input form for prediction
         st.subheader("Make a Prediction")
