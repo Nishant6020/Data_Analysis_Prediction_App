@@ -1161,7 +1161,7 @@ def filter_dataframe(df):
                         selected = st.checkbox(f"{value}", True, key=f"{column}_{value}")
                         if not selected:
                             df_filtered = df_filtered[df_filtered[column] != value]            
-    return st.session_state.df == df_filtered
+    return df_filtered
 
 
 
@@ -1224,8 +1224,10 @@ if external_link and st.sidebar.button("Fetch Data"):
         st.session_state.df = df
 
 if 'df' in st.session_state:
-        st.sidebar.markdown("________________________")  
-        st.write(filter_dataframe(st.session_state.df))
+        st.sidebar.markdown("________________________")
+        filtered_df = filter_dataframe(st.session_state.df)
+        st.write(filtered_df)
+        st.session_state.df = filtered_df
         st.sidebar.title("Menu")
         data_prerview_expander = st.sidebar.expander("Data Preview", expanded=False)
         if data_prerview_expander:
