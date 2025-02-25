@@ -1215,7 +1215,6 @@ if uploaded_file:
         # Store the DataFrame in session state
         if 'df' not in st.session_state:
             st.session_state.df = df
-            st.write(filter_dataframe(st.session_state.df))
 
 # External link data fetching
 external_link = st.sidebar.text_input("Enter github dataset URL to fetch data:")
@@ -1223,12 +1222,11 @@ if external_link and st.sidebar.button("Fetch Data"):
     df = fetch_data_from_url(external_link)
     if df is not None:
         st.session_state.df = df
-        st.write(filter_dataframe(st.session_state.df))
 
 if 'df' in st.session_state:
         st.sidebar.markdown("________________________")  
+        st.write(filter_dataframe(st.session_state.df))
         st.sidebar.title("Menu")
-        # Data prerview Section (Initially hidden)
         data_prerview_expander = st.sidebar.expander("Data Preview", expanded=False)
         if data_prerview_expander:
             prerview_option = st.sidebar.selectbox("Data Preview", [
