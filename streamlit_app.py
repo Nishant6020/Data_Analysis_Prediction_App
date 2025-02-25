@@ -1161,7 +1161,7 @@ def filter_dataframe(df):
                         selected = st.checkbox(f"{value}", True, key=f"{column}_{value}")
                         if not selected:
                             df_filtered = df_filtered[df_filtered[column] != value]            
-    return st.session_state.df = df_filtered
+    return st.session_state.df == df_filtered
 
 
 
